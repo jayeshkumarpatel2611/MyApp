@@ -33,7 +33,7 @@ stages:
                 echo "##vso[task.setvariable variable=TF_VAR_KEY_VAULT_RGNAME;]${{ variables.key_vault_rgname }}"
           - template: terraform-deploy.yml
             parameters:
-              working_dir: "$(Build.SourcesDirectory)/terraform/environments/nonprod/global"
+              working_dir: "$(Build.SourcesDirectory)/terraform/environment/nonprod/global"
               serviceconn_name : "POH - Non PROD"
               tfresourcegroupname : "POH"
               tfstorageaccountname : "sunriseappeastus"

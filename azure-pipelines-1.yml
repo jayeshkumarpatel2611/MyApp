@@ -1,0 +1,41 @@
+trigger: none
+pr:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - $(build.sourcedirectory)/.azdeploy/environments/nonprod/global/*
+      
+pool: 
+  vmImage: ubuntu-latest
+
+variables:
+  environment: global
+  key_vault_name: sunriseprodeastus
+  key_vault_rgname: POH
+
+stages:
+  - stage: Terraform_${{ variables.environment }}
+    displayName: "Terraform Provisioning - ${{ variables.environment }}"
+    jobs:
+      - job: terraform_provisioning
+        displayName: "Deploy resources - Terraform"
+        timeoutInMinutes: 180
+        steps:
+          - task: Bash@3
+            displayName: 'Set Environment Variable'
+            enabled: true
+            inputs:
+              targetType: 'inline'
+              script: |
+                echo "##vso[task.setvariable variable=TF_VAR_KEY_VAULT_NAME;]${{ variables.key_vault_name }}"
+                echo "##vso[task.setvariable variable=TF_VAR_KEY_VAULT_RGNAME;]${{ variables.key_vault_rgname }}"
+          - template: ../../../templates/terraform-deploy.yml
+            parameters:
+              working_dir: "$(Build.SourcesDirectory)/terraform/environments/nonprod/global"
+              serviceconn_name : "POH - Non PROD"
+              tfresourcegroupname : "POH"
+              tfstorageaccountname : "sunriseappeastus"
+              azureRmContainerName : "sunriseprodtfstate"
+              tfstatefile : "poh-global-demo.tfstate"

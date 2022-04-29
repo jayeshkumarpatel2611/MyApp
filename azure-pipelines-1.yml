@@ -5,7 +5,7 @@ pr:
       - main
   paths:
     include:
-      - $(build.sourcedirectory)/.azdo/environments/nonprod/global/*
+      - $(build.sourcedirectory)/.azdeploy/environments/nonprod/global/*
       
 pool: 
   vmImage: ubuntu-latest

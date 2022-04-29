@@ -1,7 +1,7 @@
 name: ASP .net App CI CD Pipeline
 
 trigger:
-- master
+- none
 
 pool:
  vmImage: 'windows-latest'

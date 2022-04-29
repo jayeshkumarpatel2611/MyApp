@@ -11,7 +11,7 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  environment: global
+  environment: Dev
   key_vault_name: sunriseprodeastus
   key_vault_rgname: POH
 
@@ -31,7 +31,7 @@ stages:
               script: |
                 echo "##vso[task.setvariable variable=TF_VAR_KEY_VAULT_NAME;]${{ variables.key_vault_name }}"
                 echo "##vso[task.setvariable variable=TF_VAR_KEY_VAULT_RGNAME;]${{ variables.key_vault_rgname }}"
-          - template: ../../../templates/terraform-deploy.yml
+          - template: ../../../template/terraform-deploy.yml
             parameters:
               working_dir: "$(Build.SourcesDirectory)/terraform/environments/nonprod/global"
               serviceconn_name : "POH - Non PROD"

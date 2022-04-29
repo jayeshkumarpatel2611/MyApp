@@ -1,0 +1,103 @@
+name: ASP .net App CI CD Pipeline
+
+trigger:
+- master
+
+pool:
+ vmImage: 'windows-latest'
+
+stages:
+    - stage: CI_Pipeline
+      jobs:
+          - job: 
+            steps:         
+                - task: DotNetCoreCLI@2
+                  displayName: 'Restore'
+                  inputs:
+                    command: 'restore'
+                    projects: '**/*.csproj'
+                    feedsToUse: 'select'
+
+                - task: DotNetCoreCLI@2
+                  displayName: 'Build'
+                  inputs:
+                    command: 'build'
+                    projects: '**/*.csproj'
+                    arguments: '--configuration $(buildConfiguration)'
+
+
+                - task: DotNetCoreCLI@2
+                  displayName: 'Publish'
+                  inputs:
+                   command: 'publish'
+                   publishWebProjects: true
+                   arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+                   zipAfterPublish: true
+                  
+
+                - task: PublishBuildArtifacts@1
+                  displayName: 'PublishArtificats'
+                  inputs:
+                    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+                    ArtifactName: 'drop'
+                    publishLocation: 'Container' 
+
+
+    - stage: Deployment_To_Dev
+      jobs:   
+          - deployment: Deployment_started_on_Dev
+            environment: 'Dev'
+            strategy:
+             runOnce:
+               deploy:                
+                steps:
+                    - task: DownloadBuildArtifacts@1
+                      displayName: 'Downloading Build Artifacts'
+                      inputs:
+                        buildType: 'current'
+                        downloadType: 'single'
+                        downloadPath: '$(System.ArtifactsDirectory)'
+
+                    - task: AzureRmWebAppDeployment@4
+                      displayName: 'Deploying Application on Test Environment'
+                      inputs:
+                        ConnectionType: 'AzureRM'
+                        azureSubscription: 'Free Trial (fbc36460-aa9b-41f4-af43-7d87d41a1806)'
+                        appType: 'webApp'
+                        WebAppName: 'mydemowebapp01'
+                        packageForLinux: $(build.artifactstagingdirectory)/**/*.zip
+                        DeploymentType: 'webDeploy'
+                        RemoveAdditionalFilesFlag: true
+
+
+    - stage: Deployment_To_Prod
+      jobs: 
+      
+          - deployment: Deployment_started_on_Prod
+            environment: 'Prod'
+            strategy:
+             runOnce:
+               deploy:               
+                steps:
+                - task: DownloadBuildArtifacts@1
+                  displayName: 'Downloading Build Artifacts'
+                  inputs:
+                        buildType: 'current'
+                        downloadType: 'single'
+                        downloadPath: '$(System.ArtifactsDirectory)'
+
+                - task: AzureRmWebAppDeployment@4
+                  displayName: 'Deploying Application on Prod Environment'
+                  inputs:
+                    ConnectionType: 'AzureRM'
+                    azureSubscription: 'Free Trial (fbc36460-aa9b-41f4-af43-7d87d41a1806)'
+                    appType: 'webApp'
+                    WebAppName: 'mydemowebapp05'
+                    packageForLinux: $(build.artifactstagingdirectory)/**/*.zip
+                    enableCustomDeployment: true
+                    DeploymentType: 'webDeploy'
+                    RemoveAdditionalFilesFlag: true
+
+          
+
+

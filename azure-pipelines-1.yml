@@ -11,9 +11,9 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  environment: Dev
-  key_vault_name: sunrisekeyvaulteastus
-  key_vault_rgname: POH
+  environment: 'Dev'
+  key_vault_name: 'sunrisekeyvaulteastus'
+  key_vault_rgname: 'POH'
 
 stages:
   - stage: Terraform_${{ variables.environment }}

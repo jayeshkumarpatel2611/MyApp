@@ -9,7 +9,7 @@ parameters:
     type: string
 
   - name: serviceconn_name
-    default: 'POH - Non PROD'
+    default: 'AzureServiceConnection'
     type: string
 
   - name: tfresourcegroupname

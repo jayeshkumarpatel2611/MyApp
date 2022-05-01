@@ -9,7 +9,7 @@ parameters:
     type: string
 
   - name: serviceconn_name
-    default: 'MyAppAzureSPN'
+    default: 'AzureDevOpsDemoSPN'
     type: string
 
   - name: tfresourcegroupname

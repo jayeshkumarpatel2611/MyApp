@@ -7,17 +7,19 @@ tags = {
   "Owner" = "CMTeam"
 }
 
-analytics_name = "loganalytics-global-sunrise-bs-eastus-001"
+analytics_name = "loganalytics-bs-sunrise-eastus"
+
 analytics_sku = "pergb2018"
 
-app_insight_name = "appinsight-sunrise-bs-eastus-01"
+app_insight_name = "appinsight-bs-sunrise-eastus"
 
-server_name = "sqlsrv-global-sunrise-eastus-bs-001"
-database_name = "sqldb-global-sunrise-eastus-bs-001"
+server_name = "sqlsrv-bs-sunrise-eastus"
 
-app_config_name = "appconfig-global-sunrise-poh-eastus-bs-001"
+database_name = "sqldb-bs-sunrise-eastus"
 
-keyvault_name = "keyvault-global-sunrise-eastus-bs-001"
+app_config_name = "appconfig-bs-sunrise-eastus"
+
+keyvault_name = "keyvault-sunrise-eastus"
 
 
 

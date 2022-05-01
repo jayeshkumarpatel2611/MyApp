@@ -37,5 +37,5 @@ stages:
               serviceconn_name : "FreeAzureDevOpsSPN"
               tfresourcegroupname : "POH"
               tfstorageaccountname : "sunriseappeastus"
-              azureRmContainerName : "sunriseprodtfstate"
+              azureRmContainerName : "sunrise-prod-tfstate"
               tfstatefile : "poh-global-demo.tfstate"

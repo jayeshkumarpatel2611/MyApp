@@ -4,8 +4,8 @@ resource "azurerm_mssql_server" "sql-server" {
     resource_group_name = var.resource_group_name
     location = var.resource_group_location
     version = "12.0"
-    administrator_login = data.azurerm_key_vault_secret.secret1
-    administrator_login_password = data.azurerm_key_vault_secret.secret2
+    administrator_login = data.azurerm_key_vault_secret.secret1.value
+    administrator_login_password = data.azurerm_key_vault_secret.secret2.value
 
     tags = var.tags
 

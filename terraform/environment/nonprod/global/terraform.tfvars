@@ -17,7 +17,7 @@ database_name = "sqldb-global-poh-eastus-001"
 
 app_config_name = "appconfig-global-poh-eastus-001"
 
-Key_Vault_Name = "KV-global-poh-eastus-001"
+Key_Vault_Name = "sunrisekeyvaulteastus"
 
 
 

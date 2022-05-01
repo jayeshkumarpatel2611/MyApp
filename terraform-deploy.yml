@@ -20,77 +20,48 @@ parameters:
     default: 'sunriseappeastus'
     type: string
 
-stages:
-    - stage: Init
-      jobs:   
-          - deployment: terraform init
-            environment: 'Dev'
-            strategy:
-             runOnce:
-               deploy:                
-                steps:
-                  - task: TerraformCLI@0
-                    displayName: "terraform init"
-                    enabled: true
-                    inputs:
-                      command: "init"
-                      backendServiceArm: ${{ parameters.serviceconn_name }}
-                      backendType: "azurerm"
-                      backendAzureRmResourceGroupName: ${{ parameters.tfresourcegroupname }}
-                      backendAzureRmStorageAccountName: ${{ parameters.tfstorageaccountname }}
-                      backendAzureRmContainerName: ${{ parameters.azureRmContainerName }}
-                      backendAzureRmKey: ${{ parameters.tfstatefile }}
-                      allowTelemetryCollection: true
-                      workingDirectory: ${{ parameters.working_dir }}
-    - stage: Plan
-      jobs:   
-          - deployment: terraform plan
-            environment: 'Dev'
-            strategy:
-             runOnce:
-               deploy:                
-                steps:                
-                  - task: TerraformCLI@0
-                    displayName: "terraform plan"
-                    enabled: true
-                    inputs:
-                      command: 'plan'
-                      workingDirectory: '${{ parameters.working_dir }}'
-                      environmentServiceName: ${{ parameters.serviceconn_name }}
-                      commandOptions: '-out=tfplan'
-                      allowTelemetryCollection: true
-    - stage: Apply
-      jobs:   
-          - deployment: terraform apply
-            environment: 'Dev'
-            strategy:
-             runOnce:
-               deploy:                
-                steps:           
-                  - task: TerraformCLI@0
-                    displayName: "terraform apply"
-                    enabled: true  
-                    inputs:
-                      command: 'apply'
-                      workingDirectory: '${{ parameters.working_dir }}'
-                      environmentServiceName: ${{ parameters.serviceconn_name }}
-                      commandOptions: 'tfplan'
-                      allowTelemetryCollection: true
-                    condition: and(succeeded(), eq(variables['TerraformApply'], 'True'))
-    - stage: Destroy
-      jobs:   
-          - deployment: terraform destroy
-            environment: 'Dev'
-            strategy:
-             runOnce:
-               deploy:                
-                steps:  
-                  - task: TerraformCLI@0
-                    displayName: "terraform destroy"
-                    enabled: true
-                    inputs:
-                      command: 'destroy'
-                      workingDirectory: '${{ parameters.working_dir }}'
-                      environmentServiceName: ${{ parameters.serviceconn_name }}
-                      allowTelemetryCollection: true
-                    condition: and(succeeded(), eq(variables['TerraformDestroy'], 'True'))
+steps:
+- task: TerraformCLI@0
+  displayName: "terraform init"
+  enabled: true
+  inputs:
+    command: "init"
+    backendServiceArm: ${{ parameters.serviceconn_name }}
+    backendType: "azurerm"
+    backendAzureRmResourceGroupName: ${{ parameters.tfresourcegroupname }}
+    backendAzureRmStorageAccountName: ${{ parameters.tfstorageaccountname }}
+    backendAzureRmContainerName: ${{ parameters.azureRmContainerName }}
+    backendAzureRmKey: ${{ parameters.tfstatefile }}
+    allowTelemetryCollection: true
+    workingDirectory: ${{ parameters.working_dir }}
+
+- task: TerraformCLI@0
+  displayName: "terraform plan"
+  enabled: true
+  inputs:
+    command: 'plan'
+    workingDirectory: '${{ parameters.working_dir }}'
+    environmentServiceName: ${{ parameters.serviceconn_name }}
+    commandOptions: '-out=tfplan'
+    allowTelemetryCollection: true
+            
+- task: TerraformCLI@0
+  displayName: "terraform apply"
+  enabled: true  
+  inputs:
+    command: 'apply'
+    workingDirectory: '${{ parameters.working_dir }}'
+    environmentServiceName: ${{ parameters.serviceconn_name }}
+    commandOptions: 'tfplan'
+    allowTelemetryCollection: true
+  condition: and(succeeded(), eq(variables['TerraformApply'], 'True'))
+
+- task: TerraformCLI@0
+  displayName: "terraform destroy"
+  enabled: true
+  inputs:
+    command: 'destroy'
+    workingDirectory: '${{ parameters.working_dir }}'
+    environmentServiceName: ${{ parameters.serviceconn_name }}
+    allowTelemetryCollection: true
+  condition: and(succeeded(), eq(variables['TerraformDestroy'], 'True'))

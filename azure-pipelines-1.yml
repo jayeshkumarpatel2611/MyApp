@@ -12,7 +12,7 @@ pool:
 
 variables:
   environment: Dev
-  key_vault_name: sunriseprodeastus
+  key_vault_name: sunrisekeyvaulteastus
   key_vault_rgname: POH
 
 stages:

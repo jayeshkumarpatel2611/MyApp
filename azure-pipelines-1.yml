@@ -41,7 +41,7 @@ stages:
           - template: terraform-deploy.yml
             parameters:
               working_dir: "$(Build.SourcesDirectory)/terraform/environment/nonprod/global"
-              serviceconn_name : "AzureDevOpsDemoSPN"
+              serviceconn_name : "FreeAzureDevOpsSPN"
               tfresourcegroupname : "POH"
               tfstorageaccountname : "sunriseappeastus"
               azureRmContainerName : "sunriseprodtfstate"

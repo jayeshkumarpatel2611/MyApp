@@ -57,6 +57,8 @@ variable "database_name" {
   
 }
 
+/*
+  
 variable "Global_Key_Vault_Name" {
 
     description = "Key Valut Name"
@@ -78,6 +80,24 @@ variable "Key_Vault_Name" {
     type = string
 }
 
+*/
+  
+variable "KEY_VAULT_NAME" {
+  description = "(Required) Commmon Key Vault name"
+  type        = string
+}
+
+variable "KEY_VAULT_RGNAME" {
+  description = "(Required) Commmon Key Vault Resource group"
+  type        = string
+}
+
+variable "keyvault_name" {
+  description = "(Required) Prod Key Vault name"
+  type        = string
+}
+
+  
 variable "app_config_name" {
 
     description = "Name of App Configuration"

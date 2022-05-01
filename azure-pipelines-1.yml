@@ -29,8 +29,7 @@ stages:
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: |
-                az login
-                az account set --subscription 2daf7420-f7f4-4e0f-8a65-8dd8f147545b
+                az account set --subscription az account set -s fbc36460-aa9b-41f4-af43-7d87d41a1806
           - task: Bash@3
             displayName: 'Set Environment Variable'
             enabled: true

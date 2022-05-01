@@ -17,7 +17,7 @@ parameters:
     type: string
 
   - name: tfstorageaccountname
-    default: 'sunriseappeastus'
+    default: 'sunrisekeyvaulteastus'
     type: string
 
 steps:

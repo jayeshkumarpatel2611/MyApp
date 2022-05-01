@@ -31,7 +31,7 @@ analytics_name = var.analytics_name
 analytics_sku = var.analytics_sku
 
 Global_Key_Vault_Name = var.Global_Key_Vault_Name
-Global_Key_Vault_RG = var.globalRGName
+Global_Key_Vault_RG = var.Global_Key_Vault_RG
 Key_Vault_Name = var.Key_Vault_Name
 
 server_name = var.server_name

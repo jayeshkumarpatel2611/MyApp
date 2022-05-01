@@ -23,13 +23,6 @@ stages:
         displayName: "Deploy resources - Terraform"
         timeoutInMinutes: 180
         steps:
-          - task: AzureCLI@2
-            inputs:
-              azureSubscription: 'AzureDevOpsDemoSPN'
-              scriptType: 'bash'
-              scriptLocation: 'inlineScript'
-              inlineScript: |
-                az account set --subscription fbc36460-aa9b-41f4-af43-7d87d41a1806
           - task: Bash@3
             displayName: 'Set Environment Variable'
             enabled: true

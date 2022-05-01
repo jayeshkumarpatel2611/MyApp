@@ -9,7 +9,7 @@ parameters:
     type: string
 
   - name: serviceconn_name
-    default: 'AZ_SPN_Demo'
+    default: 'MyAppAzureSPN'
     type: string
 
   - name: tfresourcegroupname

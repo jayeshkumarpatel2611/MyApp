@@ -8,7 +8,7 @@ terraform {
   backend "azurerm" {
     resource_group_name  = "POH"
     storage_account_name = "sunriseappeastus"
-    container_name       = "sunriseprodtfstate"
+    container_name       = "sunrise-prod-tfstate"
     #backend will retrieve the key from yml file.
   }
 }

@@ -23,8 +23,10 @@ variable "tags" {
 variable "app_insight_name" {
   
   description = "Name of the Application Insight"
-  type =  string
-
+  type        = map(object({
+    instance = string
+    type = string
+  }))
 }
 
 # Log Analytics

@@ -51,7 +51,7 @@ stages:
         steps:
           - task: AzureKeyVault@2
             inputs:
-              azureSubscription: "poh-services-nonprod-Platform of Health"
+              azureSubscription: "FreeAzureDevOpsSPN"
               KeyVaultName: '${{ variables.key_vault_name }}'
               SecretsFilter: '*'
               RunAsPreJob: false

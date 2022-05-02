@@ -54,4 +54,27 @@ stages:
               azureSubscription: "FreeAzureDevOpsSPN"
               KeyVaultName: '${{ variables.key_vault_name }}'
               SecretsFilter: '*'
-              RunAsPreJob: false
+              RunAsPreJob: false  
+
+          - task: DownloadBuildArtifacts@1
+            displayName: Download artifacts
+            inputs:
+              buildType: 'specific'
+              project: 'ac67152a-86b2-439f-b425-33411329a8ec'
+              pipeline: '10564'
+              specificBuildWithTriggering: true
+              buildVersionToDownload: 'latest'
+              downloadType: 'single'
+              artifactName: 'DacPac'
+              downloadPath: '$(Build.ArtifactStagingDirectory)'
+
+          - task: SqlAzureDacpacDeployment@1
+            displayName: Deploy Dacpac
+            enabled: true
+            inputs:
+              azureSubscription: 'poh-services-nonprod-Platform of Health'
+              ServerName: $(globalsqlservername)
+              DatabaseName: $(globalsqldbname)
+              SqlUsername: $(serverUsername)
+              SqlPassword: $(serverPassword)
+              DacpacFile: '$(Build.ArtifactStagingDirectory)/DacPac/POHTenancy.dacpac'

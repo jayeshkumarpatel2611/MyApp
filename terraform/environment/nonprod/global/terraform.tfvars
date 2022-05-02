@@ -11,7 +11,16 @@ analytics_name = "loganalytics-bs-sunrise-eastus"
 
 analytics_sku = "pergb2018"
 
-app_insight_name = "appinsight-bs-sunrise-eastus"
+app_insight_name = {
+        "tenant" =  { 
+          instance ="001", 
+          type="global"
+        }
+      "smx" = { 
+          instance ="001", 
+          type="default"
+        }
+}
 
 server_name = "sqlsrv-bs-sunrise-eastus"
 

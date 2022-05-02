@@ -39,3 +39,19 @@ stages:
               tfstorageaccountname : "sunriseappeastus"
               azureRmContainerName : "sunrise-prod-tfstate"
               tfstatefile : "poh-global-demo.tfstate"
+
+  - stage: Deployment_Dacpac
+    condition: and(succeeded(), eq(variables['TerraformApply'], 'True'))
+    displayName: Download and deployment of dacpac
+    jobs:
+      - job: Download_and_Deploy_DacPac
+        pool:
+          vmImage: windows-latest
+        displayName: Download & Deploy publish Dacpac
+        steps:
+          - task: AzureKeyVault@2
+            inputs:
+              azureSubscription: "poh-services-nonprod-Platform of Health"
+              KeyVaultName: '${{ variables.key_vault_name }}'
+              SecretsFilter: '*'
+              RunAsPreJob: false

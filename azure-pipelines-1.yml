@@ -73,8 +73,8 @@ stages:
             enabled: true
             inputs:
               azureSubscription: 'poh-services-nonprod-Platform of Health'
-              ServerName: $(globalsqlservername)
-              DatabaseName: $(globalsqldbname)
+              ServerName: $(globalSQLservername)
+              DatabaseName: $(globalSQLDBname)
               SqlUsername: $(serverUsername)
               SqlPassword: $(serverPassword)
               DacpacFile: '$(Build.ArtifactStagingDirectory)/DacPac/POHTenancy.dacpac'

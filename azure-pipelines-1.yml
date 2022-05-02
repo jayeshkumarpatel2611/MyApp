@@ -72,7 +72,7 @@ stages:
             displayName: Deploy Dacpac
             enabled: true
             inputs:
-              azureSubscription: 'poh-services-nonprod-Platform of Health'
+              azureSubscription: 'FreeAzureDevOpsSPN'
               ServerName: $(globalSQLservername)
               DatabaseName: $(globalSQLDBname)
               SqlUsername: $(serverUsername)

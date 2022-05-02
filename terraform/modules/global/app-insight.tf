@@ -1,6 +1,8 @@
 resource "azurerm_application_insights" "app-Insights" {
+    
+    for_each = var.app_insight_name
 
-    name = var.app_insight_name
+    name = format("appi-%s-%s-%s-%s", each.key, each.value.type, var.resource_group_location, each.value.instance)  
 
     resource_group_name = var.resource_group_name
 

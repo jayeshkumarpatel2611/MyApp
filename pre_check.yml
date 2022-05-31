@@ -1,0 +1,28 @@
+name: Deploy Step1 idntenant template devops-test
+
+on: 
+   workflow_dispatch:
+      inputs:
+         dotnetruntimes:
+            description: ".Net Frameworks"
+            required: true
+            default: "dotnet-hosting-2.1.28-win,dotnet-hosting-3.1.16-win"
+            
+jobs:
+  HWS-PreDeploymentCheck:
+    runs-on: ${{ github.event.inputs.HWSServer }}
+    steps:
+    
+      - name : Get POH Service Version         
+        shell: powershell
+        run : |
+                Scripts\Install_Prerequisites.ps1  -dotnetruntimes ${{ github.event.inputs.dotnetruntimes }}             
+ 
+  HWS-Deployment:
+    needs: HWS-PreDeploymentCheck
+    steps:
+      - run: echo "Starting HWS - Deployment"
+      - name: SQL Installer
+        shell: powershell          
+        run: |  
+               Scripts\deployments.ps1

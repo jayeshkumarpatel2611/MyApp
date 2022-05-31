@@ -12,8 +12,12 @@ jobs:
   HWS-PreDeploymentCheck:
     runs-on: ${{ github.event.inputs.HWSServer }}
     steps:
-    
-      - name : Get POH Service Version         
+      - run: echo "This job is now running on a ${{ runner.os }}."
+      - run: echo "The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - run: echo "This job's status is ${{ job.status }}."
+      - name: checkout action files
+        uses: actions/checkout@v2    
+      - name : Install Prerequisites for HWS Deployments      
         shell: powershell
         run : |
                 Scripts\Install_Prerequisites.ps1  -dotnetruntimes ${{ github.event.inputs.dotnetruntimes }}             

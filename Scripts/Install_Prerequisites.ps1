@@ -407,30 +407,25 @@ Start-Process -FilePath $dotnetexe.FullName -ArgumentList "/install /quiet /nore
 
 }
 
-$grepDotnet = ""
-
-Remove-Item -Path $dotnetexe.FullName -Force
-
-dotnet --info > result.txt
-
-$grepDotnet = Get-Content .\result.txt | Select-String -Pattern "$($dotnetversion)"
-
-if($grepDotnet)
+if(Test-Path -Path "C:\Program Files\dotnet\shared\Microsoft.NETCore.App\$($dotnetversion)")
 {
 
-Write-Host "dotnet-hosting-$($dotnetversion)-win .NET Core Runtime & Hosting Bundle Installation Successful!"
+Write-Host "dotnet-hosting-$($dotnetversion)-win installed successfully!"
 
-WriteLog("dotnet-hosting-$($dotnetversion)-win .NET Core Runtime & Hosting Bundle Installation Successful!")
+WriteLog("dotnet-hosting-$($dotnetversion)-win installed successfully!")
 
 }
 else
 {
 
-Write-Host "dotnet-hosting-$($dotnetversion)-win .NET Core Runtime & Hosting Bundle Installation Failed!"
-
-WriteLog("dotnet-hosting-$($dotnetversion)-win .NET Core Runtime & Hosting Bundle Installation Failed!")
+Write-Host "Failed to install dotnet-hosting-$($dotnetversion)-win!"
+WriteLog("Failed to install dotnet-hosting-$($dotnetversion)-win!")
 
 }
+
+
+Remove-Item -Path $dotnetexe.FullName -Force
+
 
 }
 

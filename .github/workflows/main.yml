@@ -23,7 +23,7 @@ jobs:
       - name : Install Prerequisites for HWS Deployments      
         shell: powershell
         run : |
-                Scripts\Install_Prerequisites.ps1 -dotnetruntimes ${{ github.event.inputs.dotnetruntimes }} -DeploymentType ${{ github.event.inputs.deploymentType }}             
+                Scripts\Install_Prerequisites.ps1 -dotnetruntimes "${{ github.event.inputs.dotnetruntimes }}" -DeploymentType ${{ github.event.inputs.deploymentType }}             
  
   HWS-Deployment:
     runs-on: [self-hosted, SunriseAir]

@@ -65,10 +65,8 @@ Write-Host "C:\Logs directory already exists!"
 
 # Install Latest Azure CLI 
 
-$azCLI = az version | ConvertFrom-Json
 
-if($azCLI -eq $null)
-{
+
 try {
 
 Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi -ErrorAction Stop
@@ -101,25 +99,12 @@ Write-Host "Failed to Download and Install Latest Azure CLI!"
 WriteLog("Failed to Download and Install Latest Azure CLI!")
 
 }
-}
-else
-{
 
-Write-Host "Found Azure CLI Installed with Version: $($azCLI.'azure-cli')"
-
-WriteLog("Found Azure CLI Installed with Version: $($azCLI.'azure-cli')")
-
-$azCliCheckPassed = $true
-
-}
 
 
 # Install Latest Azure Az PowerShell module
 
-$azPowerShell = Get-InstalledModule -Name Az
 
-if($azPowerShell -eq $null)
-{
 try {
 
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
@@ -154,17 +139,7 @@ Write-Host "Failed to Download and Install Latest Azure PowerShell module!"
 WriteLog("Failed to Download and Install Latest Azure PowerShell module!")
 
 }
-}
-else
-{
 
-Write-Host "Found Azure PowerShell module Installd with Version: $($azPowerShell).Version"
-
-WriteLog("Found Azure PowerShell module Installed with Version: $($azPowerShell).Version")
-
-$azPowerShellCheckPassed = $true
-
-}
 
 
 # Set the Security Protocol to Tls1.2

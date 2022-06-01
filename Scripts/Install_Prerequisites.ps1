@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param (
   [parameter(Mandatory=$True)]
-  [string]$dotnetruntimes=@()
+  [string]$dotnetruntimes
 )
 
 $dotnets = $dotnetruntimes.Split(",")

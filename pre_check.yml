@@ -15,7 +15,7 @@ on:
             
 jobs:
   HWS-PreDeploymentCheck:
-    runs-on: ${{ github.event.inputs. }}
+    runs-on: ${{ github.event.inputs.SunriseAir }}
     steps:
       - run: echo "This job is now running on a ${{ runner.os }}."
       - run: echo "The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
@@ -28,6 +28,7 @@ jobs:
                 Scripts\Install_Prerequisites.ps1 -dotnetruntimes ${{ github.event.inputs.dotnetruntimes }} -DeploymentType ${{ github.event.inputs.deploymentType }}             
  
   HWS-Deployment:
+    runs-on: ${{ github.event.inputs.SunriseAir }}
     needs: HWS-PreDeploymentCheck
     steps:
       - run: echo "Starting HWS - Deployment"

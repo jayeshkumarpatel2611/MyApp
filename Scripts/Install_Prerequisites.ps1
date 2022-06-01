@@ -18,10 +18,10 @@ $logFileName = "Prerequisites_Check" + "_" + $(get-date -f yyyy-MM-dd_HH-mm-ss) 
 
 $logFilePath  = $logFolderPath + "\" +  $logFileName
 
-$azCliCheckPassed               = $false
-$azPowerShellCheckPassed        = $false
-$azSqlServerModuleCheckPassed   = $false
-$dotnetInstallCheckPassed       = $false
+$azCLIPresent = $false
+$azPSPresent = $false
+$sqlModulePresent = $false
+
 
 Function WriteLog
 {
@@ -65,30 +65,29 @@ Write-Host "C:\Logs directory already exists!"
 
 # Install Latest Azure CLI 
 
+try 
+{
+$checkAzCli = az version
+
+
+Write-Host "Found Azure CLI Installed with Version:  $($azCLI.'azure-cli')"
+
+WriteLog("Found Azure CLI Installed with Version:  $($azCLI.'azure-cli')")
+
+$azCLIPresent = $true
+
+}
+catch {
+
+Write-Host "Azure CLI is not installed on $($env:COMPUTERNAME)"
+
+WriteLog("Azure CLI is not installed on $($env:COMPUTERNAME)")
+
+}
 
 try {
 
 Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi -ErrorAction Stop
-
-$azCLI = az version | ConvertFrom-Json
-
-if($azCLI -ne $null)
-{
-Write-Host "Installed Azure CLI with Version:  $($azCLI.'azure-cli')"
-
-WriteLog("Installed Azure CLI with Version:  $($azCLI.'azure-cli')")
-
-$azCliCheckPassed = $true
-
-}
-else
-{
-
-Write-Host "Azure CLI Installation Failed!"
-
-WriteLog("Azure CLI Installation Failed!")
-
-}
 
 }
 catch {
@@ -99,36 +98,64 @@ WriteLog("Failed to Download and Install Latest Azure CLI!")
 
 }
 
+$azCLI = az version | ConvertFrom-Json
+
+if($azCLI -ne $null)
+{
+
+if($azCLIPresent -eq $True)
+{
+
+Write-Host "Updated Azure CLI with Version:  $($azCLI.'azure-cli')"
+
+WriteLog("Updated Azure CLI with Version:  $($azCLI.'azure-cli')")
+
+}
+else
+{
+Write-Host "Installed Azure CLI with Version:  $($azCLI.'azure-cli')"
+
+WriteLog("Installed Azure CLI with Version:  $($azCLI.'azure-cli')")
+}
+
+}
+else
+{
+
+Write-Host "Azure CLI Installation Failed! on $($env:COMPUTERNAME)"
+
+WriteLog("Azure CLI Installation Failed! on $($env:COMPUTERNAME)")
+
+}
+
 
 
 # Install Latest Azure Az PowerShell module
 
+try 
+{
+$checkAzPowerShell = Get-InstalledModule -Name Az
+
+Write-Host "Found Azure PowerShell module Installed with Version:  $($azCLI.'azure-cli')"
+
+WriteLog("Found Azure PowerShell module Installed with Version:  $($azCLI.'azure-cli')")
+
+$azPSPresent = $true
+
+}
+catch {
+
+Write-Host "Azure Az PowerShell module is not installed on $($env:COMPUTERNAME)!"
+
+WriteLog("Azure Az PowerShell module is not installed on $($env:COMPUTERNAME)!")
+
+}
 
 try {
 
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force -ErrorAction Stop 
-
-$azPowerShell = Get-InstalledModule -Name Az
-
-if($azPowerShell -ne $null)
-{
-Write-Host "Installed Azure PowerShell module with Version: $($azPowerShell).Version"
-
-WriteLog("Installed Azure PowerShell module with Version: $($azPowerShell).Version")
-
-$azPowerShellCheckPassed = $true
-
-}
-else
-{
-
-Write-Host "Azure PowerShell module Installation Failed!"
-
-WriteLog("Azure PowerShell module Installation Failed!")
-
-}
 
 }
 catch {
@@ -139,6 +166,33 @@ WriteLog("Failed to Download and Install Latest Azure PowerShell module!")
 
 }
 
+$azPowerShell = Get-InstalledModule -Name Az
+
+if($azPowerShell -ne $null)
+{
+
+if($azPSPresent -eq $true)
+{
+Write-Host "Updated Azure PowerShell module with Version: $($azPowerShell).Version"
+
+WriteLog("Updated Azure PowerShell module with Version: $($azPowerShell).Version")
+}
+else
+{
+Write-Host "Installed Azure PowerShell module with Version: $($azPowerShell).Version"
+
+WriteLog("Installed Azure PowerShell module with Version: $($azPowerShell).Version")
+}
+
+}
+else
+{
+
+Write-Host "Azure PowerShell module Installation Failed!"
+
+WriteLog("Azure PowerShell module Installation Failed!")
+
+}
 
 
 # Set the Security Protocol to Tls1.2
@@ -151,19 +205,56 @@ WriteLog("Failed to Download and Install Latest Azure PowerShell module!")
 if($DeploymentType -match "HC")
 {
 
+try 
+{
+$checksqlModule = Get-InstalledModule -Name SqlServer
+
+Write-Host "Found SqlServer Module installed with Version: $($sqlModule).Version"
+
+WriteLog("Found SqlServer Module installed with Version: $($sqlModule).Version")
+
+$sqlModulePresent = $true
+
+}
+catch {
+
+Write-Host "SqlServer Module is not installed on $($env:COMPUTERNAME)"
+
+WriteLog("SqlServer Module is not installed on $($env:COMPUTERNAME)")
+
+}
+
+
 try {
 
-Install-Module -Name SqlServer -AllowClobber -Force -ErrorAction Stop
+Install-Module -Name SqlServer -AllowClobber -Force -ErrorAction Stop 
+
+}
+catch {
+
+Write-Host "Failed to Download and Install Latest SqlServer Module"
+
+WriteLog("Failed to Download and Install Latest SqlServer Module")
+
+}
 
 $sqlModule = Get-InstalledModule -Name SqlServer
 
 if($sqlModule -ne $null)
 {
+
+if($sqlModulePresent -eq $true)
+{
+Write-Host "Updated SqlServer Module with Version: $($sqlModule).Version"
+
+WriteLog("Updated SqlServer Module with Version: $($sqlModule).Version")
+}
+else
+{
 Write-Host "Installed SqlServer Module with Version: $($sqlModule).Version"
 
 WriteLog("Installed SqlServer Module with Version: $($sqlModule).Version")
-
-$azSqlServerModuleCheckPassed = $true
+}
 
 }
 else
@@ -171,15 +262,6 @@ else
 Write-Host "SqlServer Module Installation Failed!"
 
 WriteLog("SqlServer Module Installation Failed!")
-}
-
-}
-catch {
-
-Write-Host "Failed to Download and Install Latest SqlServer Module!"
-
-WriteLog("Failed to Download and Install Latest SqlServer Module!")
-
 }
 
 }
@@ -339,6 +421,26 @@ else {
 
 }
 
+# Check HTTPS Binding in IIS
+
+$CheckHttpsBinding = Get-IISSiteBinding "Default Web Site" -Protocol https 
+
+if($CheckHttpsBinding -and $CheckHttpsBinding.BindingInformation -contains "443")
+{
+Write-Host "https binding in IIS is already added!" 
+
+WriteLog("https binding in IIS is already added!")
+}
+else
+{
+cls
+
+Write-Host "Warning - https binding is not configured in IIS!” 
+
+WriteLog("Warning - https binding is not configured in IIS!”)
+
+}
+
 # Download and Install .NET Core Runtime & Hosting Bundle
 
 foreach($dotnet in $dotnets)
@@ -407,7 +509,7 @@ Start-Process -FilePath $dotnetexe.FullName -ArgumentList "/install /quiet /nore
 
 }
 
-if(Test-Path -Path "C:\Program Files\dotnet\shared\Microsoft.NETCore.App\$($dotnetversion)")
+if(Test-Path -Path C:\Program Files\dotnet\shared\Microsoft.NETCore.App\$($dotnetversion))
 {
 
 Write-Host "dotnet-hosting-$($dotnetversion)-win installed successfully!"
@@ -428,6 +530,3 @@ Remove-Item -Path $dotnetexe.FullName -Force
 
 
 }
-
-
-

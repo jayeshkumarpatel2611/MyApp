@@ -423,9 +423,9 @@ else {
 
 # Check HTTPS Binding in IIS
 
-$CheckHttpsBinding = Get-IISSiteBinding "Default Web Site" -Protocol https 
+$CheckHttpsBinding = Get-IISSiteBinding "Default Web Site" -Protocol https
 
-if($CheckHttpsBinding -and $CheckHttpsBinding.BindingInformation -contains "443")
+if($CheckHttpsBinding -and $CheckHttpsBinding.BindingInformation -eq "*:443:")
 {
 Write-Host "https binding in IIS is already added!" 
 
@@ -434,11 +434,9 @@ WriteLog("https binding in IIS is already added!")
 else
 {
 cls
-
 Write-Host "Warning - https binding is not configured in IIS!” 
 
 WriteLog("Warning - https binding is not configured in IIS!”)
-
 }
 
 # Download and Install .NET Core Runtime & Hosting Bundle
@@ -524,9 +522,5 @@ Write-Host "Failed to install dotnet-hosting-$($dotnetversion)-win!"
 WriteLog("Failed to install dotnet-hosting-$($dotnetversion)-win!")
 
 }
-
-
 Remove-Item -Path $dotnetexe.FullName -Force
-
-
 }

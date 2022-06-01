@@ -70,9 +70,9 @@ try
 $checkAzCli = az version
 
 
-Write-Host "Found Azure CLI Installed with Version:  $($azCLI.'azure-cli')"
+Write-Host "Found Azure CLI Installed with Version:  $($checkAzCli.'azure-cli')"
 
-WriteLog("Found Azure CLI Installed with Version:  $($azCLI.'azure-cli')")
+WriteLog("Found Azure CLI Installed with Version:  $($checkAzCli.'azure-cli')")
 
 $azCLIPresent = $true
 
@@ -136,9 +136,9 @@ try
 {
 $checkAzPowerShell = Get-InstalledModule -Name Az
 
-Write-Host "Found Azure PowerShell module Installed with Version:  $($azCLI.'azure-cli')"
+Write-Host "Found Azure PowerShell module Installed with Version:  $($checkAzPowerShell).Version"
 
-WriteLog("Found Azure PowerShell module Installed with Version:  $($azCLI.'azure-cli')")
+WriteLog("Found Azure PowerShell module Installed with Version:  $($checkAzPowerShell).Version")
 
 $azPSPresent = $true
 
@@ -209,9 +209,9 @@ try
 {
 $checksqlModule = Get-InstalledModule -Name SqlServer
 
-Write-Host "Found SqlServer Module installed with Version: $($sqlModule).Version"
+Write-Host "Found SqlServer Module installed with Version: $($checksqlModule).Version"
 
-WriteLog("Found SqlServer Module installed with Version: $($sqlModule).Version")
+WriteLog("Found SqlServer Module installed with Version: $($checksqlModule).Version")
 
 $sqlModulePresent = $true
 
@@ -433,11 +433,12 @@ WriteLog("https binding in IIS is already added!")
 }
 else
 {
-cls
 Write-Host "Warning - https binding is not configured in IIS!” 
 
 WriteLog("Warning - https binding is not configured in IIS!”)
 }
+
+
 
 # Download and Install .NET Core Runtime & Hosting Bundle
 
@@ -522,5 +523,12 @@ Write-Host "Failed to install dotnet-hosting-$($dotnetversion)-win!"
 WriteLog("Failed to install dotnet-hosting-$($dotnetversion)-win!")
 
 }
+
+
 Remove-Item -Path $dotnetexe.FullName -Force
+
+
 }
+
+
+

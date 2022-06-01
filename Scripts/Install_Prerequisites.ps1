@@ -1,7 +1,11 @@
 [CmdletBinding()]
 param (
-  [parameter(Mandatory=$True)]
-  [string]$dotnetruntimes
+  [parameter(Mandatory=$True,
+  HelpMessage="List of dotnet framework names separated by commas.")]
+  [string]$dotnetruntimes,
+  [parameter(Mandatory=$True,
+  HelpMessage="Deployment Type either HC or HWS")]
+  [string]$DeploymentType
 )
 
 $dotnets = $dotnetruntimes.Split(",")
@@ -170,6 +174,9 @@ $azPowerShellCheckPassed = $true
 
 # Update the installed version of the SqlServer module
 
+if($DeploymentType -match "HC")
+{
+
 $sqlModule = Get-InstalledModule -Name SqlServer
 
 if($sqlModule -eq $null)
@@ -215,6 +222,8 @@ Write-Host "Found SqlServer Module Installed with Version: $($sqlModule).Version
 WriteLog("Found SqlServer Module Installed with Version: $($sqlModule).Version")
 
 $azSqlServerModuleCheckPassed = $true
+
+}
 
 }
 

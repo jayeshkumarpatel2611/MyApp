@@ -1,4 +1,4 @@
-name: Deploy Step1 idntenant template devops-test
+name: Pre-Check validation
 
 on: 
    workflow_dispatch:
@@ -8,9 +8,14 @@ on:
             required: true
             default: "dotnet-hosting-2.1.28-win,dotnet-hosting-3.1.16-win"
             
+         deploymentType:
+            description: "Wheter Precheck is for HC or HWS"
+            required: true
+            default: "HWS"
+            
 jobs:
   HWS-PreDeploymentCheck:
-    runs-on: ${{ github.event.inputs.HWSServer }}
+    runs-on: ${{ github.event.inputs. }}
     steps:
       - run: echo "This job is now running on a ${{ runner.os }}."
       - run: echo "The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
@@ -20,7 +25,7 @@ jobs:
       - name : Install Prerequisites for HWS Deployments      
         shell: powershell
         run : |
-                Scripts\Install_Prerequisites.ps1  -dotnetruntimes ${{ github.event.inputs.dotnetruntimes }}             
+                Scripts\Install_Prerequisites.ps1 -dotnetruntimes ${{ github.event.inputs.dotnetruntimes }} -DeploymentType ${{ github.event.inputs.deploymentType }}             
  
   HWS-Deployment:
     needs: HWS-PreDeploymentCheck

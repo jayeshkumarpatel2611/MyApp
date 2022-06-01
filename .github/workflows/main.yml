@@ -12,7 +12,7 @@ on:
             default: "HWS"
             
 jobs:
-  HWS-PreDeploymentCheck:
+  HWS-PreCheck:
     runs-on: ${{ github.event.inputs.SunriseAir }}
     steps:
       - run: echo "This job is now running on a ${{ runner.os }}."
@@ -27,7 +27,7 @@ jobs:
  
   HWS-Deployment:
     runs-on: ${{ github.event.inputs.SunriseAir }}
-    needs: HWS-PreDeploymentCheck
+    needs: HWS-PreCheck
     steps:
       - run: echo "Starting HWS - Deployment"
       - name: SQL Installer

@@ -2,10 +2,10 @@
 param (
   [parameter(Mandatory=$True,
   HelpMessage="List of dotnet framework names separated by commas.")]
-  [string]$dotnetruntimes,
+  [string]$dotnetRuntimes,
   [parameter(Mandatory=$True,
   HelpMessage="Deployment Type either HC or HWS")]
-  [string]$DeploymentType
+  [string]$deploymentType
 )
 
 $dotnets = $dotnetruntimes.Split(",")
@@ -64,7 +64,6 @@ Write-Host "C:\Logs directory already exists!"
 
 
 # Install Latest Azure CLI 
-
 
 
 try {
@@ -152,11 +151,6 @@ WriteLog("Failed to Download and Install Latest Azure PowerShell module!")
 if($DeploymentType -match "HC")
 {
 
-$sqlModule = Get-InstalledModule -Name SqlServer
-
-if($sqlModule -eq $null)
-{
-
 try {
 
 Install-Module -Name SqlServer -AllowClobber -Force -ErrorAction Stop
@@ -185,18 +179,6 @@ catch {
 Write-Host "Failed to Download and Install Latest SqlServer Module!"
 
 WriteLog("Failed to Download and Install Latest SqlServer Module!")
-
-}
-
-}
-else
-{
-
-Write-Host "Found SqlServer Module Installed with Version: $($sqlModule).Version"
-
-WriteLog("Found SqlServer Module Installed with Version: $($sqlModule).Version")
-
-$azSqlServerModuleCheckPassed = $true
 
 }
 
@@ -399,7 +381,7 @@ WriteLog("Failed to download dotnet-hosting-$($dotnetversion)-win.exe!")
 }
 
 # Validate the hash
-if((Get-FileHash -Path .\dotnet-hosting-$($dotnetversion)-win.exe -Algorithm SHA512).Hash.ToUpper() -ne $($dotnetfileHash).ToUpper()) 
+if((Get-FileHash -Path dotnet-hosting-$($dotnetversion)-win.exe -Algorithm SHA512).Hash.ToUpper() -ne $($dotnetfileHash).ToUpper()) 
 { 
 
 Write-Host "Computed checksum did not match - dotnet-hosting-$($dotnetversion)-win.exe"
@@ -418,7 +400,7 @@ Write-Host "dotnet-hosting-$($dotnetversion)-win.exe downloaded successfully!"
 
 WriteLog("dotnet-hosting-$($dotnetversion)-win.exe downloaded successfully!")
 
-.\dotnet-hosting-$($dotnetversion)-win.exe /install /quiet /norestart
+dotnet-hosting-$($dotnetversion)-win.exe /install /quiet /norestart
 
 }
 

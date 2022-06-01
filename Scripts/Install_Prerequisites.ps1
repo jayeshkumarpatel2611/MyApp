@@ -400,14 +400,16 @@ Write-Host "dotnet-hosting-$($dotnetversion)-win.exe downloaded successfully!"
 
 WriteLog("dotnet-hosting-$($dotnetversion)-win.exe downloaded successfully!")
 
-dotnet-hosting-$($dotnetversion)-win.exe /install /quiet /norestart
+
+$dotnetexe = Get-ChildItem | Where-Object { $_.Name -like "*.exe" }
+
+Start-Process -FilePath $dotnetexe.FullName -ArgumentList "/install /quiet /norestart" -Wait -NoNewWindow -PassThru
 
 }
 
-
-
-
 $grepDotnet = ""
+
+Remove-Item -Path $dotnetexe.FullName -Force
 
 dotnet --info > result.txt
 
@@ -431,3 +433,6 @@ WriteLog("dotnet-hosting-$($dotnetversion)-win .NET Core Runtime & Hosting Bundl
 }
 
 }
+
+
+

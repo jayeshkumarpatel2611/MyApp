@@ -291,7 +291,16 @@ Write-Log -Message "Found Azure CLI is not installed on $($env:COMPUTERNAME)" -S
 
 try {
 
-Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; 
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+
+$NuGet = Find-Package -Name "NuGet"
+
+if(-not $NuGet)
+{
+Install-Package -Name PackageManagement -Force -Confirm:$false -Source PSGallery
+}
+
+Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi 
 
 Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet' -ErrorAction Stop
 
@@ -695,7 +704,9 @@ foreach ($serviceTypes in $json.Services)
 function Check_HTTPS_Binding # This function checkes IIS has Https Binidng or not
 {
 
-$CheckHttpsBinding = Get-IISSiteBinding "Default Web Site" -Protocol https | Out-Null
+$WebSite = Get-Website
+
+$CheckHttpsBinding = Get-IISSiteBinding $WebSite.Name -Protocol https | Out-Null
 
 if($CheckHttpsBinding -and $CheckHttpsBinding.BindingInformation -eq "*:443:")
 {

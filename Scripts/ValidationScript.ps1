@@ -6,11 +6,11 @@ param (
   [parameter(Mandatory=$true)]
   [ValidateSet('Pre','Post')]
   [string]$validationType, # Pre or Post
-  [parameter(Mandatory=$true)]
-  [string]$EnvironmentName, 
   [parameter(Mandatory=$true,
   HelpMessage="List of dotnet framework names separated by commas. Exanple: 2.1.28,3.1.16,7.0.0-preview.5")]
   [string]$dotnetRuntimes,
+  [parameter(Mandatory=$true)]
+  [string]$EnvironmentName, 
   [parameter(Mandatory=$true)]
   [string]$metaFileReleaseJson,
   [parameter(Mandatory=$true)]
@@ -19,6 +19,7 @@ param (
   [string]$requiredEnterpriseManagerVersion,
   [string]$sqlServer,
   [string]$sqlDatabase,
+  [string]$sqlAccount,
   [string]$sqlRole,
   [string]$HC_PhysicalConnectionPath,
   [string]$HWS_PhysicalConnectionPath
@@ -28,6 +29,40 @@ $logFolderName = "Logs"
 
 $logFolderPath = "C:\" + $logFolderName
 $sqlRole = "SXAGitActions"
+
+# Testing Variables Start from here
+
+$dotnetRuntimes = "2.1.28,3.1.16"
+
+$validationFor = "HC"
+
+$validationType = "Pre"
+
+$requiredHeliosConnectVersion = "8.7.3394.0"
+
+$requiredEnterpriseManagerVersion = "8.7.3394.0"
+
+$sqlServer = ""
+
+$sqlDatabase = ""
+
+$sqlAccount = ""
+
+$sqlRole = ""
+
+$ValidationScriptModulePath = $env:USERPROFILE + "\" + "Desktop" + "\" + "ValidationScriptModule.psm1"
+
+$metaFileReleaseJson = $env:USERPROFILE + "\" + "Desktop" + "\" + "file.json"
+
+$EnvironmentName = ""
+
+$HC_PhysicalConnectionPath = ""
+
+$HWS_PhysicalConnectionPath = ""
+
+
+# Testing Variables End from here
+
 
 if(-not $sqlAccount)
 {
@@ -208,6 +243,18 @@ catch {
 
 if(($validationFor -eq "HC") -and $validationType -eq "Pre")
 {
+
+try {
+
+  Install_SqlModule
+
+}
+catch {
+
+  $ErrorMessage = $_.Exception.Message  
+  Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
+
+} 
 
 try {
 

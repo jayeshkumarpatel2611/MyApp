@@ -319,7 +319,7 @@ $checkAzPowerShell = Get-InstalledModule -Name Az | select Name,Version
 
 $AzPSVersion = $checkAzPowerShell.Version
 
-if($AzPSVersion)
+if($AzPSVersion -ne $null)
 {
 Write-Log -Message "Found Azure PowerShell module Installed with Version:  $($AzPSVersion)" -Severity Information
 }
@@ -347,6 +347,8 @@ Write-Log -Message "Failed to Download and Install Latest Azure PowerShell modul
 
 }
 
+}
+
 $azPowerShell = Get-InstalledModule -Name Az | select Name,Version -ErrorAction Stop | select Name,Version
 
 $AzPSVersion = $azPowerShell.Version
@@ -361,8 +363,6 @@ else
 {
 
 Write-Log -Message "Azure PowerShell module Installation Failed!; Error: $($_)" -Severity Error
-
-}
 
 }
 
@@ -405,19 +405,19 @@ Write-Log -Message "Failed to Download and Install Latest SqlServer Module; $($E
 
 }
 
-}
-
-$sqlModule = Get-InstalledModule -Name SqlServer | select Name,Version
+$sqlModule = Get-InstalledModule -Name SqlServer | select Name, Version
 
 $sqlModuleVersion = $sqlModule.Version
 
-if(-not $sqlModule)
+if($sqlModule -ne $null)
 { 
-Write-Log -Message "Installed SqlServer Module with Version: $($sqlModuleVersion)" -Severity Information
+Write-Host "Installed SqlServer Module with Version: $($sqlModuleVersion)"
 }
 else
 {
-Write-Log -Message "SqlServer Module Installation Failed!; $($Exception)" -Severity Error
+Write-Host "SqlServer Module Installation Failed!; $($Exception)" 
+}
+
 }
 
 }

@@ -3,23 +3,11 @@ name: Deployment template - Non Prod
 on: 
    workflow_call:
       inputs:
-         ringLevel:
-            description: "Ring Level to Deploy"
-            required: true
-            type: string       
-         serviceHost:
-            description: "Service Host Name"
-            required: true
-            type: string
-         dotnetruntimes:
+         dotnetRuntimes:
             description: "dotnet frameworks which need to be install like dotnet-hosting-2.1.28-win,dotnet-hosting-3.1.16-win"
             required: true
             type: string
-         appDomainAccount:
-            description: "App Domain Account"
-            required: true
-            type: string 
-         envName:
+         EnvironmentName:
             description: "Environment Name"
             required: true
             type: string
@@ -31,79 +19,11 @@ on:
             description: "HC Environment Name"
             required: true
             type: string
-         metajsonfile:
+         metaFileReleaseJson:
             description: "Version of the metajson"
             required: true
             type: string
-         AppsToDeploy:
-            description: "List of services to deploy"
-            required: true
-            type: string
-         approvalStageEnv:
-            description: "Environment Approval"
-            required: true
-            type: string
-         isRestore:
-            description: "Do you want to restore your older app setting.json file? ($True/$False)"
-            required: true
-            type: string
-         SDRM:
-            description: "Do you want to start POHBAckgroundservice app pool after creation?($True/$False)"
-            required: true
-            type: string
-         POHTenantID:
-            description: "POH Tenant ID"
-            required: true
-            type: string       
-         IDNTenantID:
-            description: "IDN Tenant ID"
-            required: true
-            type: string
-         POHBASEURL:
-            description: "POH BASE URL"
-            required: true
-            type: string 
-         DevopsKeyVault:
-            description: "Devops Key Vault Name"
-            required: true
-            type: string
-         GlobalKeyVault:
-            description: "Global Key Vault Name"
-            required: true
-            type: string  
-         HCPhysicalPath:
-            description: "HC Physcial Path"
-            required: true
-            type: string
-         HWSPhysicalPath:
-            description: "HWS Physcial Path"
-            required: true
-            type: string
-         EnterpriseMangerPath:
-            description: "Enterprise Manager Path"
-            required: true
-            type: string
-         VirtualConnectionPath:
-            description: "Virtual Connection Path"
-            required: true
-            type: string    
-         envCode:
-            description: "Environment Code"
-            required: true
-            type: string
-         clientName:
-            description: "Client Name"
-            required: true
-            type: string 
-         clientEnvName:
-            description: "Client Environment Name"
-            required: true
-            type: string
-      secrets:
-         AZURE_DEVOPS_PAT_TOKEN:
-            required: true
-         RING0_WORKFLOW_DISPATCH:
-            required: true
+
 jobs:
 
   HC-PreCheck:
@@ -117,7 +37,7 @@ jobs:
       - name : Install Prerequisites for HC Deployments      
         shell: powershell
         run : |
-                Scripts\Install_Prerequisites.ps1 -dotnetruntimes "${{ inputs.dotnetruntimes }}" -DeploymentType 'HC' 
+                Scripts\ValidationScript.ps1 -validationFor "HC" -validationType "Pre" -dotnetRuntimes "${{ inputs.dotnetRuntimes }}" -EnvironmentName "${{ inputs.EnvironmentName }}" -metaFileReleaseJson "${{ inputs.metaFileReleaseJson }}" -ValidationScriptModulePath "${{ inputs.ValidationScriptModulePath }}" -requiredHeliosConnectVersion "${{ inputs.requiredHeliosConnectVersion }}" -requiredEnterpriseManagerVersion "${{ inputs.requiredEnterpriseManagerVersion }}" -sqlServer "${{ inputs.sqlServer }}" -sqlDatabase "${{ inputs.sqlDatabase }}" 
                 
   HWS-PreCheck:
     runs-on: ${{ inputs.HWSServer }}
@@ -130,5 +50,5 @@ jobs:
        - name : Install Prerequisites for HWS Deployments      
          shell: powershell
          run : |
-                Scripts\Install_Prerequisites.ps1 -dotnetruntimes "${{ inputs.dotnetruntimes }}" -DeploymentType 'HWS' 
+                Scripts\ValidationScript.ps1 -validationFor "HWS" -validationType "Pre" -dotnetRuntimes "${{ inputs.dotnetRuntimes }}" -EnvironmentName "${{ inputs.EnvironmentName }}" -metaFileReleaseJson "${{ inputs.metaFileReleaseJson }}" -ValidationScriptModulePath "${{ inputs.ValidationScriptModulePath }}" -requiredHeliosConnectVersion "${{ inputs.requiredHeliosConnectVersion }}" -requiredEnterpriseManagerVersion "${{ inputs.requiredEnterpriseManagerVersion }}" -sqlServer "${{ inputs.sqlServer }}" -sqlDatabase "${{ inputs.sqlDatabase }}" 
                 

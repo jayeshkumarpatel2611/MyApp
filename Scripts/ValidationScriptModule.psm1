@@ -800,6 +800,15 @@ Param (
        [string]$sqlRole
        )
 
+
+$sqlModule = Get-InstalledModule -Name SqlServer
+
+if(-not $sqlModule)
+{ 
+Write-Log -Message "SqlServer Module was not found, Installing SqlServer Module in $($env:COMPUTERNAME)" -Severity Information
+Install_SqlModule
+}
+
 try
 {
 $sqlLoginCheck = Invoke-Sqlcmd -Query "SELECT * FROM sys.server_principals WHERE Name = '$($sqlAccount)'" -ServerInstance $sqlServer

@@ -293,7 +293,7 @@ try {
 
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
 
-Install-Package -Name PackageManagement -Force -Confirm:$false -Source PSGallery
+Install-Package -Name PackageManagement -Force -Confirm:$false -Source PSGallery -WarningAction SilentlyContinue
 
 Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi 
 
@@ -336,9 +336,9 @@ try {
 
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
 
-Install-Package -Name PackageManagement -Force -Confirm:$false -Source PSGallery
+Install-Package -Name PackageManagement -Force -Confirm:$false -Source PSGallery -WarningAction SilentlyContinue
 
-Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -AllowClobber -Force  -Confirm:$false -ErrorAction Stop
+Install-Module -Name Az -Scope AllUsers -Repository PSGallery -AllowClobber -Force  -Confirm:$false -ErrorAction Stop
 
 }
 catch {
@@ -362,7 +362,7 @@ function Install_SqlModule # This function install SqlModule Module
 
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
 
-Install-Package -Name PackageManagement -Force -Confirm:$false -Source PSGallery
+Install-Package -Name PackageManagement -Force -Confirm:$false -Source PSGallery -WarningAction SilentlyContinue
 
 try 
 {
@@ -379,7 +379,7 @@ Write-Log -Message "SqlServer Module is not installed on $($env:COMPUTERNAME)" -
 
 try {
 
-Install-Module -Name SqlServer -AllowClobber -Force -ErrorAction Stop -Confirm:$false
+Install-Module -Name SqlServer -Scope AllUsers -AllowClobber -Force -ErrorAction Stop -Confirm:$false
 
 }
 catch {

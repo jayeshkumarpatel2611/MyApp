@@ -293,12 +293,7 @@ try {
 
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
 
-$NuGet = Find-Package -Name "NuGet"
-
-if(-not $NuGet)
-{
 Install-Package -Name PackageManagement -Force -Confirm:$false -Source PSGallery
-}
 
 Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi 
 
@@ -341,16 +336,11 @@ try {
 
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
 
-$NuGet = Find-Package -Name "NuGet"
 
-if(-not $NuGet)
-{
 Install-Package -Name PackageManagement -Force -Confirm:$false -Source PSGallery
-}
-else
-{
+
 Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -AllowClobber -Force  -Confirm:$false -ErrorAction Stop
-}
+
 
 }
 catch {
@@ -389,14 +379,7 @@ function Install_SqlModule # This function install SqlModule Module
 
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
 
-$NuGet = Find-Package -Name "NuGet"
-
-if(-not $NuGet)
-{
 Install-Package -Name PackageManagement -Force -Confirm:$false -Source PSGallery
-}
-else
-{
 
 try 
 {
@@ -417,8 +400,6 @@ Install-Module -Name SqlServer -AllowClobber -Force -ErrorAction Stop -Confirm:$
 catch {
 
 Write-Log -Message "Failed to Download and Install Latest SqlServer Module; Error: $($_)" -Severity Error
-
-}
 
 }
 

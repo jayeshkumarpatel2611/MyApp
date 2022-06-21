@@ -123,8 +123,8 @@ function Write-Log # This function Writes the Logs to Log Files and echo the Log
  
     [pscustomobject]@{
         Time = (Get-Date -f g)
-        Message = $Message
         Severity = $Severity
+        Message = $Message      
     } | Export-Csv -Path "$($LogFilePath)" -Append -NoTypeInformation
 
     Write-Host ""

@@ -343,13 +343,15 @@ Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -AllowClobber -
 }
 catch {
 
-Write-Log -Message "Failed to Download and Install Latest Azure PowerShell module!; Error: $($_)" -Severity Error
+$Exception = "Error: $($_)"
+
+Write-Log -Message "Failed to Download and Install Latest Azure PowerShell module!; $($Exception)" -Severity Error
 
 }
 
 }
 
-$azPowerShell = Get-InstalledModule -Name Az | select Name,Version -ErrorAction Stop | select Name,Version
+$azPowerShell = Get-InstalledModule -Name Az | select Name, Version
 
 $AzPSVersion = $azPowerShell.Version
 
@@ -362,7 +364,7 @@ Write-Log -Message "Installed Azure PowerShell module with Version: $($AzPSVersi
 else
 {
 
-Write-Log -Message "Azure PowerShell module Installation Failed!; Error: $($_)" -Severity Error
+Write-Log -Message "Azure PowerShell module Installation Failed!; $($Exception)" -Severity Error
 
 }
 

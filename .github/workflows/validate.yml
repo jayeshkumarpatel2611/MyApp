@@ -1,0 +1,19 @@
+name: Ring0 POH Services Deployment - Prod
+on: 
+   workflow_dispatch:
+
+jobs:
+   PowerShell_Validation_Script_Test:
+    uses: ./.github/workflows/deployment-template_prod.yml
+    with: 
+      dotnetRuntimes: "2.1.28,3.1.16"
+      EnvironmentName: "Demo"
+      metaFileReleaseJson: "./Scripts/json/poh-services-metadata.json"
+      requiredHeliosConnectVersion: ""
+      requiredEnterpriseManagerVersion: ""
+      HCServer: "Server01"
+      sqlServer: "Server01"
+      sqlDatabase: "MyDB"
+
+
+    

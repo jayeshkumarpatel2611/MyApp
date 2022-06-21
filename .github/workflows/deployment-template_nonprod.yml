@@ -55,4 +55,8 @@ jobs:
         uses: actions/upload-artifact@v2
         with: 
           name: HC_PreCheck_Logs
-          path: C:\Logs
+          path: C:\UploadLogs
+      - name : Cleanup UploadLogs Directory     
+        shell: powershell
+        run : |
+               get-item -path 'C:\UploadLogs' | remove-item -force

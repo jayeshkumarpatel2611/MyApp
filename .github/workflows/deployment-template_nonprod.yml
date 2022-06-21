@@ -59,4 +59,4 @@ jobs:
       - name : Cleanup UploadLogs Directory     
         shell: powershell
         run : |
-               get-item -path 'C:\UploadLogs' | remove-item -force
+               Remove-Item -LiteralPath "C:\UploadLogs" -Force -Recurse

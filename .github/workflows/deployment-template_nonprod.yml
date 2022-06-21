@@ -11,10 +11,6 @@ on:
             description: "Environment Name"
             required: true
             type: string
-         HWSServer:
-            description: "HWS Server Name"
-            required: true
-            type: string
          HCServer:
             description: "HC Environment Name"
             required: true
@@ -24,19 +20,19 @@ on:
             required: true
             type: string
          requiredHeliosConnectVersion:
-            description: "Version of the metajson"
+            description: "Version of the HeliosConnect"
             required: true
             type: string
          requiredEnterpriseManagerVersion:
-            description: "Version of the metajson"
+            description: "Version of the EnterpriseManager"
             required: true
             type: string
          sqlServer:
-            description: "Version of the metajson"
+            description: "sqlServer"
             required: true
             type: string 
          sqlDatabase:
-            description: "Version of the metajson"
+            description: "sqlDatabase"
             required: true
             type: string 
 

@@ -1,10 +1,10 @@
-name: Ring0 POH Services Deployment - Prod
+name: Validate
 on: 
    workflow_dispatch:
 
 jobs:
    PowerShell_Validation_Script_Test:
-    uses: ./.github/workflows/deployment-template_prod.yml
+    uses: ./.github/workflows/deployment-template_nonprod.yml
     with: 
       dotnetRuntimes: "2.1.28,3.1.16"
       EnvironmentName: "Demo"

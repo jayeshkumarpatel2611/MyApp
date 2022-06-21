@@ -54,5 +54,4 @@ jobs:
       - name: Upload Logs
       - uses: actions/upload-artifact@v3
         with:
-          name: my-logs
           path: c:\logs

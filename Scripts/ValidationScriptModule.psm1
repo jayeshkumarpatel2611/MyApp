@@ -336,11 +336,9 @@ try {
 
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
 
-
 Install-Package -Name PackageManagement -Force -Confirm:$false -Source PSGallery
 
 Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -AllowClobber -Force  -Confirm:$false -ErrorAction Stop
-
 
 }
 catch {
@@ -349,12 +347,12 @@ Write-Log -Message "Failed to Download and Install Latest Azure PowerShell modul
 
 }
 
-$azPowerShell = Get-InstalledModule -Name Az | select Name,Version -ErrorAction Stop
+$azPowerShell = Get-InstalledModule -Name Az | select Name,Version -ErrorAction Stop | select Name,Version
+
+$AzPSVersion = $azPowerShell.Version
 
 if($azPowerShell -ne $null)
 {
-
-$AzPSVersion = $azPowerShell.Version
 
 Write-Log -Message "Installed Azure PowerShell module with Version: $($AzPSVersion)" -Severity Information
 
@@ -383,9 +381,11 @@ Install-Package -Name PackageManagement -Force -Confirm:$false -Source PSGallery
 
 try 
 {
-$checksqlModule = Get-InstalledModule -Name SqlServer -ErrorAction Stop 
+$checksqlModule = Get-InstalledModule -Name SqlServer -ErrorAction Stop | select Name,Version
 
-Write-Log -Message "Found SqlServer Module installed with Version: $($checksqlModule).Version" -Severity Information
+$sqlModuleVersion = $checksqlModule.Version
+
+Write-Log -Message "Found SqlServer Module installed with Version: $($sqlModuleVersion)" -Severity Information
 
 }
 catch {
@@ -399,21 +399,25 @@ Install-Module -Name SqlServer -AllowClobber -Force -ErrorAction Stop -Confirm:$
 }
 catch {
 
-Write-Log -Message "Failed to Download and Install Latest SqlServer Module; Error: $($_)" -Severity Error
+$Exception = "Error: $($_)"
+
+Write-Log -Message "Failed to Download and Install Latest SqlServer Module; $($Exception)" -Severity Error
 
 }
 
 }
 
-$sqlModule = Get-InstalledModule -Name SqlServer
+$sqlModule = Get-InstalledModule -Name SqlServer | select Name,Version
+
+$sqlModuleVersion = $sqlModule.Version
 
 if(-not $sqlModule)
 { 
-Write-Log -Message "Installed SqlServer Module with Version: $($sqlModule).Version" -Severity Information
+Write-Log -Message "Installed SqlServer Module with Version: $($sqlModuleVersion)" -Severity Information
 }
 else
 {
-Write-Log -Message "SqlServer Module Installation Failed!; Error: $($_)" -Severity Error
+Write-Log -Message "SqlServer Module Installation Failed!; $($Exception)" -Severity Error
 }
 
 }

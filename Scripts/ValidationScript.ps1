@@ -310,6 +310,13 @@ New-Item -Path c:\ -Name UploadLogs -ItemType Directory -Force -ErrorAction Stop
 
 Write-Log -Message "Directory created for uploading logs." -Severity Information
 
+}
+catch {
+
+Write-Host "Failed to create directory to upload logs"
+
+}
+
 try {
 Copy-Item -Path $logFilePath -Destination 'C:\UploadLogs' -Force -ErrorAction Stop
 Write-Log -Message "$($logFilePath) File copied to C:\UploadLogs directory successfully!" -Severity Information
@@ -324,11 +331,4 @@ Write-Log -Message "$($logFolderPath)\beforeDeploymentPackages.csv File copied t
 }
 catch {
 Write-Log -Message "$($logFolderPath)\beforeDeploymentPackages.csv File failed to copy to C:\UploadLogs directory!" -Severity Information
-}
-
-}
-catch {
-
-Write-Host "Failed to create directory to upload logs"
-
 }

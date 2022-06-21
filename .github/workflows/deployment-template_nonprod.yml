@@ -23,6 +23,22 @@ on:
             description: "Version of the metajson"
             required: true
             type: string
+         requiredHeliosConnectVersion:
+            description: "Version of the metajson"
+            required: true
+            type: string
+         requiredEnterpriseManagerVersion:
+            description: "Version of the metajson"
+            required: true
+            type: string
+         sqlServer:
+            description: "Version of the metajson"
+            required: true
+            type: string 
+         sqlDatabase:
+            description: "Version of the metajson"
+            required: true
+            type: string 
 
 jobs:
 
@@ -37,18 +53,5 @@ jobs:
       - name : Install Prerequisites for HC Deployments      
         shell: powershell
         run : |
-                Scripts\ValidationScript.ps1 -validationFor "HC" -validationType "Pre" -dotnetRuntimes "${{ inputs.dotnetRuntimes }}" -EnvironmentName "${{ inputs.EnvironmentName }}" -metaFileReleaseJson "${{ inputs.metaFileReleaseJson }}" -ValidationScriptModulePath "${{ inputs.ValidationScriptModulePath }}" -requiredHeliosConnectVersion "${{ inputs.requiredHeliosConnectVersion }}" -requiredEnterpriseManagerVersion "${{ inputs.requiredEnterpriseManagerVersion }}" -sqlServer "${{ inputs.sqlServer }}" -sqlDatabase "${{ inputs.sqlDatabase }}" 
-                
-  HWS-PreCheck:
-    runs-on: ${{ inputs.HWSServer }}
-    steps:
-       - run: echo "This job is now running on a ${{ runner.os }}."
-       - run: echo "The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-       - run: echo "This job's status is ${{ job.status }}."
-       - name: checkout action files
-         uses: actions/checkout@v2    
-       - name : Install Prerequisites for HWS Deployments      
-         shell: powershell
-         run : |
-                Scripts\ValidationScript.ps1 -validationFor "HWS" -validationType "Pre" -dotnetRuntimes "${{ inputs.dotnetRuntimes }}" -EnvironmentName "${{ inputs.EnvironmentName }}" -metaFileReleaseJson "${{ inputs.metaFileReleaseJson }}" -ValidationScriptModulePath "${{ inputs.ValidationScriptModulePath }}" -requiredHeliosConnectVersion "${{ inputs.requiredHeliosConnectVersion }}" -requiredEnterpriseManagerVersion "${{ inputs.requiredEnterpriseManagerVersion }}" -sqlServer "${{ inputs.sqlServer }}" -sqlDatabase "${{ inputs.sqlDatabase }}" 
+                Scripts\ValidationScript.ps1 -validationFor "HC" -validationType "Pre" -dotnetRuntimes "${{ inputs.dotnetRuntimes }}" -EnvironmentName "${{ inputs.EnvironmentName }}" -metaFileReleaseJson "${{ inputs.metaFileReleaseJson }}" -ValidationScriptModulePath "Scripts/ValidationScriptModule.psm1" -requiredHeliosConnectVersion "${{ inputs.requiredHeliosConnectVersion }}" -requiredEnterpriseManagerVersion "${{ inputs.requiredEnterpriseManagerVersion }}" -sqlServer "${{ inputs.sqlServer }}" -sqlDatabase "${{ inputs.sqlDatabase }}" 
                 

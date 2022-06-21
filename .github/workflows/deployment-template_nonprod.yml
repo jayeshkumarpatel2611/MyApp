@@ -51,3 +51,8 @@ jobs:
         run : |
                 Scripts\ValidationScript.ps1 -validationFor "HC" -validationType "Pre" -dotnetRuntimes "${{ inputs.dotnetRuntimes }}" -EnvironmentName "${{ inputs.EnvironmentName }}" -metaFileReleaseJson "${{ inputs.metaFileReleaseJson }}" -ValidationScriptModulePath "./Scripts/ValidationScriptModule.psm1" -requiredHeliosConnectVersion "${{ inputs.requiredHeliosConnectVersion }}" -requiredEnterpriseManagerVersion "${{ inputs.requiredEnterpriseManagerVersion }}" -sqlServer "${{ inputs.sqlServer }}" -sqlDatabase "${{ inputs.sqlDatabase }}" 
                 
+      - name: Upload Logs
+        uses: actions/upload-artifact@v2
+        with: 
+          name: upload-logs
+          path: C:\Logs

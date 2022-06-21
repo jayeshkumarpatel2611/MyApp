@@ -11,8 +11,8 @@ jobs:
       metaFileReleaseJson: "./Scripts/json/poh-services-metadata.json"
       requiredHeliosConnectVersion: ""
       requiredEnterpriseManagerVersion: ""
-      HCServer: "Server01"
-      sqlServer: "Server01"
+      HCServer: "myserver01"
+      sqlServer: "myserver01"
       sqlDatabase: "MyDB"
 
 

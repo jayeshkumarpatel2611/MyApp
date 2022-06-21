@@ -315,20 +315,18 @@ Write-Log -Message "Failed to Download and Install Latest Azure CLI!; Error: $($
 function Install_AzPowerShell # This function install AzPowerShell Module
 {
 
-try 
+$checkAzPowerShell = Get-InstalledModule -Name Az | select Name,Version
+
+$AzPSVersion = $checkAzPowerShell.Version
+
+if($AzPSVersion -ne $null)
 {
-$checkAzPowerShell = Get-InstalledModule -Name Az -ErrorAction Stop
-
-Write-Host "Found Azure PowerShell module Installed with Version: " $($checkAzPowerShell).Version
-
-WriteLog("Found Azure PowerShell module Installed with Version:  $($checkAzPowerShell).Version")
-
+Write-Log -Message "Found Azure PowerShell module Installed with Version:  $($AzPSVersion)" -Severity Information
 }
-catch {
+else
+{
 
-Write-Host "Found Azure Az PowerShell module is not installed on $($env:COMPUTERNAME)!"
-
-WriteLog("Found Azure Az PowerShell module is not installed on $($env:COMPUTERNAME)!")
+Write-Log -Message "Found Azure Az PowerShell module is not installed on $($env:COMPUTERNAME)!" -Severity Warning
 
 try {
 
@@ -336,61 +334,20 @@ try {
 
 [Net.ServicePointManager]::SecurityProtocol
 
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
 
-$NuGet = Find-Package -Name "NuGet"
+Install-Package -Name PackageManagement -Force -Confirm:$false -Source PSGallery
 
-if(-not $NuGet)
-{
-Install-PackageProvider -Name NuGet -Force
-}
-
-Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force -ErrorAction Stop
+Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -AllowClobber -Force  -Confirm:$false -ErrorAction Stop
 
 }
 catch {
 
-Write-Host "Failed to Download and Install Latest Azure PowerShell module!"
+$Exception = "Error: $($_)"
 
-WriteLog("Failed to Download and Install Latest Azure PowerShell module!")
-
-}
-
-$azPowerShell = Get-InstalledModule -Name Az -ErrorAction Stop
-
-if($azPowerShell -ne $null)
-{
-
-Write-Host "Installed Azure PowerShell module with Version: " $($azPowerShell).Version
-
-WriteLog("Installed Azure PowerShell module with Version: $($azPowerShell).Version")
-
+Write-Log -Message "Failed to Download and Install Latest Azure PowerShell module!; $($Exception)" -Severity Error
 
 }
-else
-{
-
-Write-Host "Azure PowerShell module Installation Failed!"
-
-WriteLog("Azure PowerShell module Installation Failed!")
-
-}
-}
-
-$azPowerShell = Get-InstalledModule -Name Az | select Name, Version
-
-$AzPSVersion = $azPowerShell.Version
-
-if($azPowerShell -ne $null)
-{
-
-Write-Log -Message "Installed Azure PowerShell module with Version: $($AzPSVersion)" -Severity Information
-
-}
-else
-{
-
-Write-Log -Message "Azure PowerShell module Installation Failed!; $($Exception)" -Severity Error
 
 }
 

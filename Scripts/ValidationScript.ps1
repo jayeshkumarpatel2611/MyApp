@@ -30,40 +30,6 @@ $logFolderName = "Logs"
 $logFolderPath = "C:\" + $logFolderName
 $sqlRole = "SXAGitActions"
 
-# Testing Variables Start from here
-
-$dotnetRuntimes = "2.1.28,3.1.16"
-
-$validationFor = "HC"
-
-$validationType = "Pre"
-
-$requiredHeliosConnectVersion = "8.7.3394.0"
-
-$requiredEnterpriseManagerVersion = "8.7.3394.0"
-
-$sqlServer = ""
-
-$sqlDatabase = ""
-
-$sqlAccount = ""
-
-$sqlRole = ""
-
-$ValidationScriptModulePath = $env:USERPROFILE + "\" + "Desktop" + "\" + "ValidationScriptModule.psm1"
-
-$metaFileReleaseJson = $env:USERPROFILE + "\" + "Desktop" + "\" + "file.json"
-
-$EnvironmentName = ""
-
-$HC_PhysicalConnectionPath = ""
-
-$HWS_PhysicalConnectionPath = ""
-
-
-# Testing Variables End from here
-
-
 if(-not $sqlAccount)
 {
 
@@ -90,8 +56,6 @@ $PhysicalConnectionPath = "C:\Program Files (x86)\Allscripts Sunrise\POH"
 
 }
 }
-
-
 
 # Check Whether Script is invoked by Administrative Previledge User Account
 

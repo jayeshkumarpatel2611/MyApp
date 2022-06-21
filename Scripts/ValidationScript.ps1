@@ -30,6 +30,7 @@ $logFolderName = "Logs"
 $logFolderPath = "C:\" + $logFolderName
 $sqlRole = "SXAGitActions"
 
+
 if(-not $sqlAccount)
 {
 
@@ -56,6 +57,8 @@ $PhysicalConnectionPath = "C:\Program Files (x86)\Allscripts Sunrise\POH"
 
 }
 }
+
+
 
 # Check Whether Script is invoked by Administrative Previledge User Account
 
@@ -152,6 +155,30 @@ catch {
 
 try {
 
+  Install_SqlModule
+
+}
+catch {
+
+  $ErrorMessage = $_.Exception.Message  
+  Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
+
+} 
+
+try {
+
+  Check_HeliosConnet_EnterpriseManager -validationFor $validationFor -requiredHeliosConnectVersion $requiredHeliosConnectVersion -requiredEnterpriseManagerVersion $requiredEnterpriseManagerVersion -requiredAllscriptsGatewayVersion $requiredAllscriptsGatewayVersion
+
+}
+catch {
+
+  $ErrorMessage = $_.Exception.Message  
+  Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
+
+} 
+
+try {
+
   Check_HTTPS_Binding
 
 }
@@ -202,35 +229,6 @@ catch {
   Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
 
 }
-
-}
-
-if(($validationFor -eq "HC") -and $validationType -eq "Pre")
-{
-
-try {
-
-  Install_SqlModule
-
-}
-catch {
-
-  $ErrorMessage = $_.Exception.Message  
-  Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
-
-} 
-
-try {
-
-  Check_HeliosConnet_EnterpriseManager -validationFor $validationFor -requiredHeliosConnectVersion $requiredHeliosConnectVersion -requiredEnterpriseManagerVersion $requiredEnterpriseManagerVersion -requiredAllscriptsGatewayVersion $requiredAllscriptsGatewayVersion
-
-}
-catch {
-
-  $ErrorMessage = $_.Exception.Message  
-  Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
-
-} 
 
 }
 
@@ -289,6 +287,7 @@ catch {
 
 } 
 
+<#
 try {
 
   Check_POHSQL -validationFor $validationFor -metaFileReleaseJson $metaFileReleaseJson -EnvironmentName $EnvironmentName -HC_PhysicalConnectionPath $HC_PhysicalConnectionPath -HWS_PhysicalConnectionPath $HWS_PhysicalConnectionPath
@@ -300,5 +299,6 @@ catch {
   Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
 
 }
+#>
 
 }

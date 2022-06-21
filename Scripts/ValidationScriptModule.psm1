@@ -751,6 +751,8 @@ Param ([string]$validationFor,
 
 }
 
+#>
+
 function Check_HeliosConnet_EnterpriseManager # This function checks the Helios Connect and Enterprise Manager version is sufficient for Service Deployment
 {
 
@@ -791,8 +793,6 @@ Write-Log -Message "Enterprise Manager and Helios Connect is not installed on $(
 }
 
 }
-
-#>
 
 function Check_SqlScript # This function checks service account has added in database and has required role assigned.
 {

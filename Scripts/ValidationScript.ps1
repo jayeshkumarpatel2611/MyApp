@@ -343,6 +343,18 @@ Write-Log -Message "$($logFolderPath)\DeployedPackageHistory.csv File failed to 
 }
 
 
+if($validationType -eq "Pre" -and $validationFor -eq "HC")
+{
+
+if($sqlScriptCheck -eq $false)
+{
+
+$LASTEXITCODE = 1
+
+}
+
+}
+
 # Not Used Code Blocks
 
 <#

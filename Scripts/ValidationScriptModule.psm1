@@ -793,7 +793,7 @@ Param (
        [string]$sqlRole
        )
 
-$sqlScriptCheck = $false
+$script:sqlScriptCheck = $false
 
 try
 {
@@ -844,13 +844,13 @@ if($sqlLoginPresent -eq $true -and $sqlRolePresent -eq $true)
 
 Write-Log -Message "$($sqlAccount) User has $($sqlRole) Role Assigned on $($sqlDatabase) Database" -Severity Information
 
-$sqlScriptCheck = $true
+$script:sqlScriptCheck = $true
 
 }
 else
 {
 
-$sqlScriptCheck = $false
+$script:sqlScriptCheck = $false
 
 }
 

@@ -1,35 +1,50 @@
 [CmdletBinding()]
 param (
   [parameter(Mandatory=$true)]
-  [ValidateSet('HC','HWS')]
-  [string]$validationFor, # HC or HWS
-  [parameter(Mandatory=$true)]
+  [ValidateSet('HC','HWS')]                 
+  [string]$validationFor,                    # Required Parameter  # Example: HC or HWS 
+  [parameter(Mandatory=$true)]               
   [ValidateSet('Pre','Post')]
-  [string]$validationType, # Pre or Post
-  [parameter(Mandatory=$true,
+  [string]$validationType,                   # Required Parameter  # Example: Pre or Post
+  [parameter(Mandatory=$true,                
   HelpMessage="List of dotnet framework names separated by commas. Exanple: 2.1.28,3.1.16,7.0.0-preview.5")]
-  [string]$dotnetRuntimes,
+  [string]$dotnetRuntimes,                   # Required Parameter
   [parameter(Mandatory=$true)]
-  [string]$EnvironmentName, 
+  [string]$EnvironmentName,                  # Required Parameter
   [parameter(Mandatory=$true)]
-  [string]$metaFileReleaseJson,
+  [string]$metaFileReleaseJson,              # Required Parameter
   [parameter(Mandatory=$true)]
-  [string]$ValidationScriptModulePath,
-  [string]$requiredHeliosConnectVersion,
-  [string]$requiredEnterpriseManagerVersion,
-  [string]$sqlServer,
-  [string]$sqlDatabase,
-  [string]$sqlAccount,
-  [string]$sqlRole,
-  [string]$HC_PhysicalConnectionPath,
-  [string]$HWS_PhysicalConnectionPath
+  [string]$ValidationScriptModulePath,       # Required Parameter
+  [parameter(Mandatory=$true)]
+  [string]$requiredHeliosConnectVersion,     # Required Parameter
+  [parameter(Mandatory=$true)]
+  [string]$requiredEnterpriseManagerVersion, # Required Parameter
+  [parameter(Mandatory=$true)]
+  [string]$sqlServer,                        # Required Parameter
+  [parameter(Mandatory=$true)]
+  [string]$sqlDatabase,                      # Required Parameter
+  [parameter(Mandatory=$false)]
+  [string]$sqlAccount,                       # Optional Parameter
+  [parameter(Mandatory=$false)] 
+  [string]$sqlRole,                          # Optional Parameter
+  [parameter(Mandatory=$false)]           
+  [string]$HC_PhysicalConnectionPath,        # Optional Parameter
+  [parameter(Mandatory=$false)]           
+  [string]$HWS_PhysicalConnectionPath        # Optional Parameter
   )
 
 $logFolderName = "Logs"
 
 $logFolderPath = "C:\" + $logFolderName
+
+
+
+if(-not $sqlRole)
+{
+
 $sqlRole = "SXAGitActions"
 
+}
 
 if(-not $sqlAccount)
 {
@@ -56,9 +71,8 @@ if(-not $HWS_PhysicalConnectionPath)
 $PhysicalConnectionPath = "C:\Program Files (x86)\Allscripts Sunrise\POH"
 
 }
+
 }
-
-
 
 # Check Whether Script is invoked by Administrative Previledge User Account
 
@@ -106,8 +120,6 @@ catch {
 
 }
 
-
-
 # Prerequisites Check Before Service Deployment
  
 if($validationFor -eq "HC" -or $validationFor -eq "HWS" -and $validationType -eq "Pre")
@@ -130,56 +142,6 @@ catch {
 try {
 
   Install_AzCLI
-
-}
-catch {
-
-  $ErrorMessage = $_.Exception.Message  
-  Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
-
-}
-
-
-
-try {
-
-  Install_AzPowerShell
-
-}
-catch {
-
-  $ErrorMessage = $_.Exception.Message  
-  Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
-
-}
-
-try {
-
-  Install_SqlModule
-
-}
-catch {
-
-  $ErrorMessage = $_.Exception.Message  
-  Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
-
-} 
-
-try {
-
-  Check_HeliosConnet_EnterpriseManager -validationFor $validationFor -requiredHeliosConnectVersion $requiredHeliosConnectVersion -requiredEnterpriseManagerVersion $requiredEnterpriseManagerVersion -requiredAllscriptsGatewayVersion $requiredAllscriptsGatewayVersion
-
-}
-catch {
-
-  $ErrorMessage = $_.Exception.Message  
-  Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
-
-} 
-
-try {
-
-  Check_HTTPS_Binding
 
 }
 catch {
@@ -213,10 +175,20 @@ catch {
 
 }
 
-}
-
 if(($validationFor -eq "HC") -and $validationType -eq "Pre")
 {
+
+try {
+
+  Install_SqlModule
+
+}
+catch {
+
+  $ErrorMessage = $_.Exception.Message  
+  Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
+
+} 
 
 try {
 
@@ -227,6 +199,32 @@ catch {
 
   $ErrorMessage = $_.Exception.Message  
   Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
+
+}
+
+try {
+
+  Check_HeliosConnet_EnterpriseManager -validationFor $validationFor -requiredHeliosConnectVersion $requiredHeliosConnectVersion -requiredEnterpriseManagerVersion $requiredEnterpriseManagerVersion -requiredAllscriptsGatewayVersion $requiredAllscriptsGatewayVersion
+
+}
+catch {
+
+  $ErrorMessage = $_.Exception.Message  
+  Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
+
+}
+
+try {
+
+  Check_HTTPS_Binding
+
+}
+catch {
+
+  $ErrorMessage = $_.Exception.Message  
+  Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
+
+} 
 
 }
 
@@ -265,18 +263,6 @@ catch {
 
 try {
 
-  Check_Packages_PhysicalPath_With_IIS -metaFileReleaseJson $metaFileReleaseJson -EnvironmentName $EnvironmentName -HC_PhysicalConnectionPath $HC_PhysicalConnectionPath -HWS_PhysicalConnectionPath $HWS_PhysicalConnectionPath
-
-}
-catch {
-
-  $ErrorMessage = $_.Exception.Message  
-  Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
-
-} 
-
-try {
-
   Check_IISAppPools -validationFor -metaFileReleaseJson $metaFileReleaseJson -EnvironmentName $EnvironmentName -HC_PhysicalConnectionPath $HC_PhysicalConnectionPath -HWS_PhysicalConnectionPath $HWS_PhysicalConnectionPath
 
 }
@@ -287,23 +273,10 @@ catch {
 
 } 
 
-<#
-try {
-
-  Check_POHSQL -validationFor $validationFor -metaFileReleaseJson $metaFileReleaseJson -EnvironmentName $EnvironmentName -HC_PhysicalConnectionPath $HC_PhysicalConnectionPath -HWS_PhysicalConnectionPath $HWS_PhysicalConnectionPath
-
-}
-catch {
-
-  $ErrorMessage = $_.Exception.Message  
-  Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
-
-}
-#>
-
 }
 
-# Upload Logs to C:\UploadLogs
+# Create UploadLogs Directory to upload logs generated by script.
+
 try {
 
 New-Item -Path c:\ -Name UploadLogs -ItemType Directory -Force -ErrorAction Stop
@@ -316,6 +289,11 @@ catch {
 Write-Host "Failed to create directory to upload logs"
 
 }
+
+# Copy Logs Files from C:\Logs to C:\UploadLogs Directory for upload
+
+if($validationType -eq "Pre")
+{
 
 try {
 Copy-Item -Path $logFilePath -Destination 'C:\UploadLogs' -Force -ErrorAction Stop
@@ -332,3 +310,65 @@ Write-Log -Message "$($logFolderPath)\beforeDeploymentPackages.csv File copied t
 catch {
 Write-Log -Message "$($logFolderPath)\beforeDeploymentPackages.csv File failed to copy to C:\UploadLogs directory!" -Severity Information
 }
+
+}
+
+if($validationType -eq "Post")
+{
+
+try {
+Copy-Item -Path $logFilePath -Destination 'C:\UploadLogs' -Force -ErrorAction Stop
+Write-Log -Message "$($logFilePath) File copied to C:\UploadLogs directory successfully!" -Severity Information
+}
+catch {
+Write-Log -Message "$($logFilePath) File failed to copy to C:\UploadLogs directory!" -Severity Information
+}
+
+try {
+Copy-Item -Path "$($logFolderPath)\afterDeploymentPackages.csv" -Destination 'C:\UploadLogs' -Force -ErrorAction Stop
+Write-Log -Message "$($logFolderPath)\afterDeploymentPackages.csv File copied to C:\UploadLogs directory successfully!" -Severity Information
+}
+catch {
+Write-Log -Message "$($logFolderPath)\afterDeploymentPackages.csv File failed to copy to C:\UploadLogs directory!" -Severity Information
+}
+
+try {
+Copy-Item -Path "$($logFolderPath)\DeployedPackageHistory.csv" -Destination 'C:\UploadLogs' -Force -ErrorAction Stop
+Write-Log -Message "$($logFolderPath)\DeployedPackageHistory.csv File copied to C:\UploadLogs directory successfully!" -Severity Information
+}
+catch {
+Write-Log -Message "$($logFolderPath)\DeployedPackageHistory.csv File failed to copy to C:\UploadLogs directory!" -Severity Information
+}
+
+}
+
+
+# Not Used Code Blocks
+
+<#
+
+try {
+
+  Install_AzPowerShell
+
+}
+catch {
+
+  $ErrorMessage = $_.Exception.Message  
+  Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
+
+}
+
+try {
+
+  Check_POHSQL -validationFor $validationFor -metaFileReleaseJson $metaFileReleaseJson -EnvironmentName $EnvironmentName -HC_PhysicalConnectionPath $HC_PhysicalConnectionPath -HWS_PhysicalConnectionPath $HWS_PhysicalConnectionPath
+
+}
+catch {
+
+  $ErrorMessage = $_.Exception.Message  
+  Write-Log -Message "Error: $($ErrorMessage)" -Severity Information   
+
+}
+
+#>

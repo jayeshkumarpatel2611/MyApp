@@ -279,7 +279,7 @@ catch {
 
 try {
 
-New-Item -Path c:\ -Name UploadLogs -ItemType Directory -Force -ErrorAction Stop
+New-Item -Path C:\ -Name UploadLogs -ItemType Directory -Force -ErrorAction Stop | Out-Null
 
 Write-Log -Message "Directory created for uploading logs." -Severity Information
 
@@ -348,9 +348,11 @@ if($validationType -eq "Pre" -and $validationFor -eq "HC")
 
 if($sqlScriptCheck -eq $false)
 {
-
 $LASTEXITCODE = 1
 
+Write-Host "Last Exit Code: " $LASTEXITCODE
+
+Write-Host "SQL Check: " $sqlScriptCheck
 }
 
 }

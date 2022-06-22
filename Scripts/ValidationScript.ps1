@@ -356,6 +356,8 @@ $LASTEXITCODE = 1
 Write-Host "Last Exit Code: " $LASTEXITCODE
 
 Write-Host "SQL Check: " $sqlScriptCheck
+
+exit $LASTEXITCODE
 }
 
 }

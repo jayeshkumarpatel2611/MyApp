@@ -342,6 +342,9 @@ Write-Log -Message "$($logFolderPath)\DeployedPackageHistory.csv File failed to 
 
 }
 
+Write-Host "Last Exit Code: " $LASTEXITCODE
+
+Write-Host "SQL Check: " $sqlScriptCheck
 
 if($validationType -eq "Pre" -and $validationFor -eq "HC")
 {

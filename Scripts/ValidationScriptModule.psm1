@@ -1,4 +1,4 @@
-function CreateLogDirectory # This function Creates Logs Directory on C:\
+function CreateLogDirectory                   # This function Creates Logs Directory on C:\
 {
 
 Param ([string]$logFolderPath
@@ -21,7 +21,7 @@ Write-Host "Failed to create $($logFolderPath) directory!"
 
 }
 
-function CreateLogFilesFor_PreValidation # This function Creates Log Files required for Pre-Check inside C:\Logs Directory
+function CreateLogFilesFor_PreValidation      # This function Creates Log Files required for Pre-Check inside C:\Logs Directory
 {
 
 Param ([string]$logFolderPath
@@ -60,7 +60,7 @@ Write-Log -Message "Failed to create $($logFolderPath)\beforeDeploymentPackages.
 
 }
 
-function CreateLogFilesFor_PostValidation # Creates Log Files required for Post-Check inside C:\Logs Directory
+function CreateLogFilesFor_PostValidation     # Creates Log Files required for Post-Check inside C:\Logs Directory
 {
 
 Param ([string]$logFolderPath
@@ -107,7 +107,7 @@ Write-Log -Message "Failed to create $($logFolderPath)\DeployedPackageHistory.cs
 
 }
 
-function Write-Log # This function Writes the Logs to Log Files and echo the Logs to terminal.
+function Write-Log                            # This function Writes the Logs to Log Files and echo the Logs to terminal.
 {
     [CmdletBinding()]
     param(
@@ -131,7 +131,7 @@ function Write-Log # This function Writes the Logs to Log Files and echo the Log
     Write-Host "Time: $((Get-Date -f g)) | Serverity: $($Severity) | Message: $($Message)"
  }
 
-function Get_InstalledPackages # This function takes installed packages information in csv file during Pre Validation.
+function Get_InstalledPackages                # This function takes installed packages information in csv file during Pre Validation.
 {
 
 Param ([string]$validationFor,
@@ -273,7 +273,7 @@ foreach ($serviceTypes in $json.Services)
 
 }
 
-function Install_AzCLI # This function install AzureCLI
+function Install_AzCLI                        # This function install AzureCLI
 {
 
 if((Test-Path 'C:\Program Files (x86)\Microsoft SDKs\Azure\CLI*'))
@@ -312,48 +312,7 @@ Write-Log -Message "Failed to Download and Install Latest Azure CLI!; Error: $($
 
 }
 
-function Install_AzPowerShell # This function install AzPowerShell Module
-{
-
-$checkAzPowerShell = Get-InstalledModule -Name Az | select Name,Version
-
-$AzPSVersion = $checkAzPowerShell.Version
-
-if($AzPSVersion -ne $null)
-{
-Write-Log -Message "Found Azure PowerShell module Installed with Version:  $($AzPSVersion)" -Severity Information
-}
-else
-{
-
-Write-Log -Message "Found Azure Az PowerShell module is not installed on $($env:COMPUTERNAME)!" -Severity Warning
-
-try {
-
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
-[Net.ServicePointManager]::SecurityProtocol
-
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
-
-Install-Package -Name PackageManagement -Force -Confirm:$false -Source PSGallery -WarningAction SilentlyContinue
-
-Install-Module -Name Az -Scope AllUsers -Repository PSGallery -AllowClobber -Force  -Confirm:$false -ErrorAction Stop
-
-}
-catch {
-
-$Exception = "Error: $($_)"
-
-Write-Log -Message "Failed to Download and Install Latest Azure PowerShell module!; $($Exception)" -Severity Error
-
-}
-
-}
-
-}
-
-function Install_SqlModule # This function install SqlModule Module
+function Install_SqlModule                    # This function install SqlModule Module
 {
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -407,7 +366,7 @@ Write-Host "SqlServer Module Installation Failed!; $($Exception)"
 
 }
 
-function Install_DotnetBundle # This function install Dotnets which was passed through parameter
+function Install_DotnetBundle                 # This function install Dotnets which was passed through parameter
 {
 
 Param (
@@ -523,7 +482,7 @@ Remove-Item -Path $dotnetexe.FullName -Force
 
 }
 
-function Compare_Packages_With_Json # This function takes installed packages information after service deployment, and also validate with metaFileReleaseJson and create Packages Histroy csv which include Previous Installed Packages, Installed Packages and packages which are required to install 
+function Compare_Packages_With_Json           # This function takes installed packages information after service deployment, and also validate with metaFileReleaseJson and create Packages Histroy csv which include Previous Installed Packages, Installed Packages and packages which are required to install 
 {
 Param ([string]$validationFor,
        [string]$metaFileReleaseJson,
@@ -538,6 +497,24 @@ $targetServer = "Server"
 $zipPackageName = "Package-Name"
 $artifactName = "Artifact-Name"
 $artifactVersion = "Artifact-Version"
+$validBeforeDeploymentData = $false
+
+$beforeDeploymentPackagesFile = "$($logFolderPath)\beforeDeploymentPackages.csv"
+
+$beforeDeploymentPackages = Import-Csv $beforeDeploymentPackagesFile
+
+if((Test-Path -Path $beforeDeploymentPackagesFile) -and $beforeDeploymentPackages.Count -gt 0)
+{
+$headers=$beforeDeploymentPackages[0].psobject.properties.name
+$key=$headers[0] 
+$value=$headers[1]
+$beforeDeploymentPackagesTable = @{}
+$beforeDeploymentPackages | % { $beforeDeploymentPackagesTable[$_."$key"] = $_."$value"}
+$validBeforeDeploymentData = $true
+}
+
+if($validBeforeDeploymentData -eq $true)
+{
 
 Write-Log -Message "Collecting Information about existing packages installed on $($env:COMPUTERNAME)" -Severity Information 
 
@@ -595,14 +572,14 @@ foreach ($serviceTypes in $json.Services)
 
                 if($installedProductversion -match $newPackageVersion)
                 {
-
+                    
                    $previouslyInstalledProductVersion = $($beforeDeploymentPackages.GetEnumerator() | % { if($($_.key) -eq "$($webApiName)") { $($_.value) } })
 
-                   $folderSize = Get-Childitem -Path $webApiPath -Recurse -Force -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue
+                   $packageSize = Get-Childitem -Path $webApiPath -Recurse -Force -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue
 
-                   $folderSizeInMB = "{0:N2} MB" -f ($folderSize.Sum / 1MB)
+                   $packageSizeInMB = "{0:N2} MB" -f ($packageSize.Sum / 1MB)
 
-                   Write-Log -Message "PackageName: $($webApiName) - PackageSize: $($folderSizeInMB)" -Severity Information
+                   Write-Log -Message "PackageName: $($webApiName) - PackageSize: $($packageSizeInMB)" -Severity Information
 
                    Write-Log -Message "PackageName: $webApiName ==> Previous Version: $previouslyInstalledProductVersion | Installed Version : $($installedProductversion) | Expected Version : $($newPackageVersion)" -Severity Information
 
@@ -620,7 +597,7 @@ foreach ($serviceTypes in $json.Services)
 
          Write-Log -Message "Physical Path of WebAPI - $($webApiName) was not found on $($env:COMPUTERNAME)" -Severity Error
 
-         [pscustomobject]@{ PackageName = $webApiName; Version = "Not Installed" } | Export-Csv -Path "$($logFolderPath)\beforeDeploymentPackages.csv" -Append -NoTypeInformation
+         [pscustomobject]@{ PackageName = $webApiName; Version = "Not Installed" } | Export-Csv -Path "$($logFolderPath)\afterDeploymentPackages.csv" -Append -NoTypeInformation
 
          }
 
@@ -652,35 +629,79 @@ foreach ($serviceTypes in $json.Services)
   {
     if((Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where { $_.DisplayName -match "POH Business Services" -and $_.InstallSource -match "POH-Bus-Services-SQL" }).DisplayVersion)
     {
+       $previouslyInstalledSqlVersion = $($beforeDeploymentPackages.GetEnumerator() | % { if($($_.key) -eq "$($sqlPackageName)") { $($_.value) } })
+
+       $SqlPackageSize = Get-Childitem -Path "C:\Program Files (x86)\Allscripts Sunrise\Enterprise Manager\SQLScripts\Environment\POH" -Recurse -Force -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum -ErrorAction SilentlyContinue
+
+       $SqlPackageSizeInMB = "{0:N2} MB" -f ($SqlPackageSize.Sum / 1MB)
+
+       Write-Log -Message "PackageName: $($sqlPackageName) - PackageSize: $($SqlPackageSizeInMB)" -Severity Information
 
        $sqlVersion = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where { $_.DisplayName -match "POH Business Services" -and $_.InstallSource -match "POH-Bus-Services-SQL" }).DisplayVersion
 
        Write-Log -Message "$($sqlPackageName) - $($sqlVersion)" -Severity Information
 
-       [pscustomobject]@{ PackageName = $sqlPackageName; Version = $sqlVersion } | Export-Csv -Path "$($logFolderPath)\beforeDeploymentPackages.csv" -Append -NoTypeInformation
+       Write-Log -Message "PackageName: $sqlPackageName ==> Previous Version: $previouslyInstalledSqlVersion | Installed Version : $($sqlVersion) | Expected Version : $($sqlArtifactVersion)" -Severity Information
+
+       [pscustomobject]@{ PackageName = $sqlPackageName; PreviousVersion = $($beforeDeploymentPackages.GetEnumerator() | % { if($($_.key) -eq "$($sqlPackageName)") { $($_.value)  } }); InstalledVersion = $($sqlVersion); ExpectedVersion = $($sqlArtifactVersion) } | Export-Csv -Path "$($logFolderPath)\DeployedPackageHistory.csv" -Append -NoTypeInformation
+
+       [pscustomobject]@{ PackageName = $sqlPackageName; Version = $sqlVersion } | Export-Csv -Path "$($logFolderPath)\afterDeploymentPackages.csv" -Append -NoTypeInformation
 
     }
     else
     {
 
-       [pscustomobject]@{ PackageName = $sqlPackageName; Version = "Not Installed" } | Export-Csv -Path "$($logFolderPath)\beforeDeploymentPackages.csv" -Append -NoTypeInformation
+       [pscustomobject]@{ PackageName = $sqlPackageName; Version = "Not Installed" } | Export-Csv -Path "$($logFolderPath)\afterDeploymentPackages.csv" -Append -NoTypeInformation
 
     }
 
   }
 
+  }
+  else
+  {
+
+  Write-Log -Message "beforeDeploymentPackages.csv was not found or file has not sufficient data to compare deployed packages with metaFileReleaseJson File." -Severity Error
+
+  }
+
+  Write-Log -Message "Validating Web Application Physical Path in IIS for $($webApiName)" -Severity Information 
+
+  try {
+
+        $checkApplication_PhysicalPath = $null
+        $checkApplication_PhysicalPath = Get-WebApplication | ConvertTo-Json | ConvertFrom-Json | % {  $_.PhysicalPath -like "*$($webApiName)" } -ErrorAction Stop
+         
+        if((Test-Path -Path $webApiPath) -and $checkApplication_PhysicalPath -ne $null)
+        {
+           Write-Log -Message "Web Application - $($webApiName ) validated successfully with PhysicalPath -> $($checkApplication_PhysicalPath) in IIS." -Severity Information
+        }
+        else
+        {
+           Write-Log -Message "Physical Path for WebAPI - $($webApiName) was not found on $($env:COMPUTERNAME)" -Severity Error
+        }
+                
+       }
+       catch {
+
+                Write-Log -Message "Web Application is not found in IIS for $($webApiName) WebAPI." -Severity Error
+
+       }
+       
  }
 
-function Check_HTTPS_Binding # This function checkes IIS has Https Binidng or not
+function Check_HTTPS_Binding                  # This function checkes 'Default Web Site' has Https Binidng or not
 {
 
-$WebSite = Get-Website
+$WebSite = Get-Website -Name "Default Web Site"
 
+if($WebSite.Name -eq "Default Web Site")
+{
 $CheckHttpsBinding = Get-IISSiteBinding $WebSite.Name -Protocol https | Out-Null
 
 if($CheckHttpsBinding -and $CheckHttpsBinding.BindingInformation -eq "*:443:")
 {
-Write-Log -Message "https binding in IIS is already added!" -Severity Information
+Write-Log -Message "https binding is found configured in IIS!" -Severity Information
 }
 else
 {
@@ -688,55 +709,38 @@ Write-Log -Message "https binding is not configured in IIS!" -Severity Warning
 }
 
 }
-
-<#
-function Check_POHSQL # This function checks for POH SQL Packages, it will ensure no multiple POH SQL Packages are installed. 
+else
 {
 
-Param ([string]$validationFor,
-       [string]$metaFileReleaseJson,
-       [string]$EnvironmentName,
-       [string]$HC_PhysicalConnectionPath,
-       [string]$HWS_PhysicalConnectionPath
-       )
+$otherWebsiteHttpsBinding = $false
 
-  Write-Log -Message "Checking for POH SQL Packages on $($env:COMPUTERNAME)" -Severity Information 
+$CheckHttpsBinding = ""
 
-  $sql =  Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where { $_.DisplayName -match "POH Business Services" -and $_.InstallSource -match "POH-Bus-Services-SQL" }
+Write-Log -Message "'Default Web Site' is not present in IIS!" -Severity Warning
 
-  if($sql.count -gt 1)
-  {
-      Write-Log -Message "Found Multiple Version POH SQL Installed" -Severity Warning
+$CheckHttpsBinding = Get-IISSiteBinding $WebSite.Name -Protocol https | Out-Null
 
-      foreach($s in $sql)
-      {
+if($CheckHttpsBinding -and $CheckHttpsBinding.BindingInformation -eq "*:443:")
+{
+$otherWebsiteHttpsBinding = $true
+}
+else
+{
+$otherWebsiteHttpsBinding = $false
+}
 
-       Write-Log -Message "SQL Package Name: $($s.DisplayName) | Version : $($s.DisplayVersion)" -Severity Information
-
-      }
-
-  }
-  else
-  {
-    if((Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where { $_.DisplayName -match "POH Business Services" -and $_.InstallSource -match "POH-Bus-Services-SQL" }).DisplayVersion)
-    {
-
-       $sqlVersion = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where { $_.DisplayName -match "POH Business Services" -and $_.InstallSource -match "POH-Bus-Services-SQL" }).DisplayVersion
-
-       Write-Log -Message "$($sqlPackageName) - $($sqlVersion)" -Severity Information
-
-
-    }
-    else
-    {
-       Write-Log -Message "$($sqlPackageName) - is not installed!" -Severity Warning
-    }
-
-  }
+if($otherWebsiteHttpsBinding -eq $true)
+{
+Write-Log -Message "Found $($WebSite.Name) in IIS with Https configured" -Severity Information
+}
+else
+{
+Write-Log -Message "Found $($WebSite.Name) in IIS without Https configured" -Severity Information
+}
 
 }
 
-#>
+}
 
 function Check_HeliosConnet_EnterpriseManager # This function checks the Helios Connect and Enterprise Manager version is sufficient for Service Deployment
 {
@@ -779,7 +783,7 @@ Write-Log -Message "Enterprise Manager and Helios Connect is not installed on $(
 
 }
 
-function Check_SqlScript # This function checks service account has added in database and has required role assigned.
+function Check_SqlScript                      # This function checks service account has added in database and has required role assigned.
 {
 
 Param (
@@ -842,7 +846,7 @@ Write-Log -Message "$($sqlAccount) User has $($sqlRole) Role Assigned on $($sqlD
 
 }
 
-function Check_IISAppPools # This function checks Application Pools and tries to start the App Pool which was not started.
+function Check_IISAppPools                    # This function checks Application Pools and tries to start the App Pool which was not started.
 {
 
     Param ([string]$validationFor,
@@ -976,94 +980,95 @@ foreach ($serviceTypes in $json.Services)
 
 }
 
-function Check_Packages_PhysicalPath_With_IIS # This function validates the Packages Physical Connection Path with Web Application on IIS
+
+
+<# Not Used Functions
+
+function Install_AzPowerShell # This function install AzPowerShell Module
 {
 
-    Param ([string]$validationFor,
+$checkAzPowerShell = Get-InstalledModule -Name Az | select Name,Version
+
+$AzPSVersion = $checkAzPowerShell.Version
+
+if($AzPSVersion -ne $null)
+{
+Write-Log -Message "Found Azure PowerShell module Installed with Version:  $($AzPSVersion)" -Severity Information
+}
+else
+{
+
+Write-Log -Message "Found Azure Az PowerShell module is not installed on $($env:COMPUTERNAME)!" -Severity Warning
+
+try {
+
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+[Net.ServicePointManager]::SecurityProtocol
+
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+
+Install-Package -Name PackageManagement -Force -Confirm:$false -Source PSGallery -WarningAction SilentlyContinue
+
+Install-Module -Name Az -Scope AllUsers -Repository PSGallery -AllowClobber -Force  -Confirm:$false -ErrorAction Stop
+
+}
+catch {
+
+$Exception = "Error: $($_)"
+
+Write-Log -Message "Failed to Download and Install Latest Azure PowerShell module!; $($Exception)" -Severity Error
+
+}
+
+}
+
+}
+
+function Check_POHSQL # This function checks for POH SQL Packages, it will ensure no multiple POH SQL Packages are installed. 
+{
+
+Param ([string]$validationFor,
        [string]$metaFileReleaseJson,
        [string]$EnvironmentName,
        [string]$HC_PhysicalConnectionPath,
        [string]$HWS_PhysicalConnectionPath
        )
 
-$packageVersion = "Package-Version"
-$apiName = "WebAPI-Name"
-$targetServer = "Server"
-$zipPackageName = "Package-Name"
-$artifactName = "Artifact-Name"
-$artifactVersion = "Artifact-Version"
+  Write-Log -Message "Checking for POH SQL Packages on $($env:COMPUTERNAME)" -Severity Information 
 
-$json = Get-Content -Path $metaFileReleaseJson |  ConvertFrom-Json
+  $sql =  Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where { $_.DisplayName -match "POH Business Services" -and $_.InstallSource -match "POH-Bus-Services-SQL" }
 
-$services =@{}
+  if($sql.count -gt 1)
+  {
+      Write-Log -Message "Found Multiple Version POH SQL Installed" -Severity Warning
 
-if($validationFor -eq "HC")
-{
+      foreach($s in $sql)
+      {
 
-$ExcludeServer = "HWS"
+       Write-Log -Message "SQL Package Name: $($s.DisplayName) | Version : $($s.DisplayVersion)" -Severity Information
 
-}
+      }
 
-if($validationFor -eq "HWS")
-{
-
-$ExcludeServer = "HC"
-
-}
-
-foreach ($serviceTypes in $json.Services)
-{   
-
-    foreach ($service in $serviceTypes.PSObject.Properties)
+  }
+  else
+  {
+    if((Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where { $_.DisplayName -match "POH Business Services" -and $_.InstallSource -match "POH-Bus-Services-SQL" }).DisplayVersion)
     {
-        
-         foreach ($application in $service.Value.PSObject.Properties)
-         {
 
-         $server = $application.Value.PSObject.Properties[$targetServer].Value
-         $webApiName = $application.Value.PSObject.Properties[$apiName].Value
-         $newPackageVersion  = $application.Value.PSObject.Properties[$packageVersion].Value 
+       $sqlVersion = (Get-ItemProperty HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where { $_.DisplayName -match "POH Business Services" -and $_.InstallSource -match "POH-Bus-Services-SQL" }).DisplayVersion
 
-         if($server -match $ExcludeServer)
-         {
+       Write-Log -Message "$($sqlPackageName) - $($sqlVersion)" -Severity Information
 
-         continue 
 
-         }
-         
-         Write-Log -Message "Checking the Physical Path with IIS : $($webApiPath)" -Severity Information 
-
-         $webApiPath = $PhysicalConnectionPath + "\" + $EnvironmentName + "\" + $service.Name + "\" + $webApiName  
-
-         if(Test-Path -Path $webApiPath)
-         {
-
-           try {
-
-                $checkApplication_PhysicalPath = Get-WebApplication | ConvertTo-Json | ConvertFrom-Json | % {  $_.PhysicalPath -like "*$($webApiName)" } -ErrorAction Stop
-         
-                Write-Log -Message "Web Application found for $($webApiName) in IIS with PhysicalPath -->  $($checkApplication_PhysicalPath)" -Severity Information
-                
-              }
-              catch {
-
-                Write-Log -Message "Web Application is not created for $($webApiName) in IIS, because Physical Path not found in IIS for $($webApiName)" -Severity Error
-
-              }
-
-         }
-         else
-         {
-
-         Write-Log -Message "Physical Path of WebAPI - $($webApiName) was not found on $($env:COMPUTERNAME)" -Severity Error
-
-         }
-
-       }
-
-     }
+    }
+    else
+    {
+       Write-Log -Message "$($sqlPackageName) - is not installed!" -Severity Warning
+    }
 
   }
 
 }
 
+#>

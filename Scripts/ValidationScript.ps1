@@ -349,7 +349,7 @@ Write-Host "SQL Check: " $sqlScriptCheck
 if($validationType -eq "Pre" -and $validationFor -eq "HC")
 {
 
-if($sqlScriptCheck -eq $false)
+if($sqlScriptCheck -match "Fail")
 {
 $LASTEXITCODE = 1
 

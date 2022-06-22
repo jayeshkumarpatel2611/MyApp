@@ -793,6 +793,8 @@ Param (
        [string]$sqlRole
        )
 
+$sqlScriptCheck = $false
+
 try
 {
 $sqlLoginCheck = Invoke-Sqlcmd -Query "SELECT * FROM sys.server_principals WHERE Name = '$($sqlAccount)'" -ServerInstance $sqlServer
@@ -842,6 +844,14 @@ if($sqlLoginPresent -eq $true -and $sqlRolePresent -eq $true)
 
 Write-Log -Message "$($sqlAccount) User has $($sqlRole) Role Assigned on $($sqlDatabase) Database" -Severity Information
 
+$sqlScriptCheck = $true
+
+}
+else
+{
+
+$sqlScriptCheck = $false
+
 }
 
 }
@@ -849,7 +859,7 @@ Write-Log -Message "$($sqlAccount) User has $($sqlRole) Role Assigned on $($sqlD
 function Check_IISAppPools                    # This function checks Application Pools and tries to start the App Pool which was not started.
 {
 
-    Param ([string]$validationFor,
+Param ([string]$validationFor,
        [string]$metaFileReleaseJson,
        [string]$EnvironmentName,
        [string]$HC_PhysicalConnectionPath,

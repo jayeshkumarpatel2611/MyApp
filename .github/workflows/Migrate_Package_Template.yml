@@ -1,0 +1,37 @@
+name: Azure DevOps Packages Migration Template
+
+on: 
+   workflow_call:
+      inputs:
+         destinationOrganization:
+            description: "Azure DevOps Organization"
+            required: true
+            type: string    
+         destinationProjectName:
+            description: "Azure DevOps Project"
+            required: true
+            type: string
+         destinationFeedName:
+            description: "Azure DevOps Feed"
+            required: true
+            type: string
+         destinationScope:
+            description: "Azure DevOps Scope"
+            required: true
+            type: string
+
+jobs:
+  Migrate_Packages:
+      runs-on: windows-latest
+      steps:
+         - run: echo "Migrate Packages to ${{ input.destinationOrganization }}/${{ input.destinationProjectName }}/${{ input.destinationFeedName }}"
+         - run: echo "This job is now running on a ${{ runner.os }}."
+         - run: echo "The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+         - run: echo "This job's status is ${{ job.status }}."
+         - name: checkout action files
+           uses: actions/checkout@v2          
+           shell: powershell
+           run : |
+                   Scripts/MigratePackages.ps1 -destinationOrganization "${{ inputs.destinationOrganization }}" -destinationProjectName "${{ inputs.destinationProjectName }}" -destinationFeedName "${{ inputs.destinationFeedName }}" -destinationScope "${{ inputs.destinationScope }}" -metaFileReleasePath "./Packages/poh-services-metadata.json" -SourceOrg_PAT "${{ secrets.SourceOrg_PAT }}" -DestinationOrg_PAT "${{ secrets.DestinationOrg_PAT }}"
+       
+         

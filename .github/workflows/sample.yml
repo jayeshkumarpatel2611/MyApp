@@ -13,7 +13,7 @@ jobs:
     name: "Reading JSON Object"
     runs-on: ubuntu-latest
     outputs:
-      service-deployment-matrix: ${{ toJSON(steps.export-service-deployment-matrix.outputs.service-deployment-matrix) }}
+      service-deployment-matrix: ${{ steps.export-service-deployment-matrix.outputs.service-deployment-matrix }}
     steps:
     - uses: actions/checkout@v2
 

@@ -26,18 +26,15 @@ jobs:
         JSON="${JSON//$'\r'/'%0D'}"
         echo "::set-output name=service-deployment-matrix::${JSON}"
 
-  Stage2:
-    name: "Service Deployment - ${{ matrix.server.name }}"
+  Ring:
+    name: "${{ matrix.ring.name }}"
     runs-on: ubuntu-latest
     needs: Stage1
     strategy:
       matrix:
         server: ${{ fromJSON(needs.Stage1.outputs.service-deployment-matrix) }}
     steps:
-    - name: Display JSON
-      shell: pwsh          
+    - name: ${{ matrix.ring.displayName }}      
       run: | 
-           Write-Host "Host IP Address : " ${{ matrix.server.ip }}
-           Write-Host "Server Username : " ${{ matrix.server.username }}
-           Write-Host "Server Port     : " ${{ matrix.server.port }}
-
+        echo "${{ matrix.ring.displayName }} Approved"
+  

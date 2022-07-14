@@ -9,33 +9,19 @@ on:
 
 
 jobs:
-  Stage1:
-    name: "Reading JSON Object"
-    runs-on: ubuntu-latest
-    outputs:
-      service-deployment-matrix: ${{ steps.export-service-deployment-matrix.outputs.service-deployment-matrix }}
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Export deployment matrix
-      id: export-service-deployment-matrix
-      run: |
-        JSON="${{inputs.myInput}}"
-        echo "::set-output name=service-deployment-matrix::$JSON"
 
   Stage2:
     name: "Service Deployment - ${{ matrix.server.name }}"
-    if: ${{ needs.Stage1.outputs.service-deployment-matrix != '' }}
     runs-on: ubuntu-latest
     needs: Stage1
     strategy:
       matrix:
-        server: ${{ fromJSON(needs.Stage1.outputs.service-deployment-matrix) }}
+        server: ${{ fromJSON(input.myInput) }}
     steps:
     - name: Display JSON
       shell: pwsh          
       run: | 
-           Write-Host "Host IP Address : " ${{ matrix.server.ip }} -fg Green
+           Write-Host "Host IP Address : " ${{ matrix.server.ip }}
            Write-Host "Server Username : " ${{ matrix.server.username }}
            Write-Host "Server Port     : " ${{ matrix.server.port }}
 

@@ -28,6 +28,7 @@ jobs:
 
   Stage2:
     name: "Service Deployment - ${{ matrix.server.name }}"
+    if: ${{ needs.Stage1.outputs.service-deployment-matrix != '' }}
     runs-on: ubuntu-latest
     needs: Stage1
     strategy:

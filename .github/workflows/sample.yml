@@ -16,7 +16,7 @@ jobs:
     needs: Stage1
     strategy:
       matrix:
-        server: ${{ fromJson("${{ inputs.myInput }}") }}
+        server: ${{ fromJson(${{ inputs.myInput }}) }}
     steps:
     - name: Display JSON
       shell: pwsh          

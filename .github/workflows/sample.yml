@@ -32,6 +32,7 @@ jobs:
 
     steps:
     - name: Deploying Services
+      uses: actions/checkout@v2
       with:
         host: ${{ matrix.server.ip }}
         username: ${{ matrix.server.username }}

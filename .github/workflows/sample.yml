@@ -9,18 +9,18 @@ jobs:
     name: Create deployment artifacts
     runs-on: ubuntu-latest
     outputs:
-      deployment-matrix: ${{ steps.export-service-deployment-matrix.outputs.service-deployment-matrix }}
+      service-deployment-matrix: ${{ steps.export-service-deployment-matrix.outputs.deployment-matrix }}
     steps:
     - uses: actions/checkout@v2
 
     - name: Export deployment matrix
       id: export-service-deployment-matrix
       run: |
-        JSON=\"$(cat ./service-deployment-matrix.json)"
-        JSON=\"${JSON//'%'/'%25'}"
-        JSON=\"${JSON//$'\n'/'%0A'}"
-        JSON=\"${JSON//$'\r'/'%0D'}"
-        echo "::set-output name=service-deployment-matrix::$JSON"
+        JSON="$(cat ./service-deployment-matrix.json)"
+        JSON="${JSON//'%'/'%25'}"
+        JSON="${JSON//$'\n'/'%0A'}"
+        JSON="${JSON//$'\r'/'%0D'}"
+        echo "::set-output name=deployment-matrix::$JSON"
 
   Stage2:
     name: "Service Deployment - ${{ matrix.server.name }}"

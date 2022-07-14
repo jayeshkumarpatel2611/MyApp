@@ -38,7 +38,7 @@ jobs:
     - name: Display JSON
       shell: pwsh          
       run: | 
-           Write-Host "Host IP Address : " ${{ matrix.server.ip }}
+           Write-Host "Host IP Address : " ${{ matrix.server.ip }} -fg Green
            Write-Host "Server Username : " ${{ matrix.server.username }}
            Write-Host "Server Port     : " ${{ matrix.server.port }}
 

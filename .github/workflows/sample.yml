@@ -30,8 +30,6 @@ jobs:
       matrix:
         server: ${{ fromJson(needs.Stage1.outputs.service-deployment-matrix) }}
     steps:
-    - uses: actions/checkout@v2
-    
     - name: Deploying Services
       with:
         host: ${{ matrix.server.ip }}

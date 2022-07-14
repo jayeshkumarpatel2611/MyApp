@@ -4,7 +4,6 @@ on:
     
     inputs:
       myInput:
-        default: "Input JSON Object"
         required: true
         type: string
 

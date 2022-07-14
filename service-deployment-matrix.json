@@ -1,29 +1,23 @@
 [
-    {
+{
       "name": "server-1",
       "ip": "123.456.78.90",
       "username": "web1",
-      "port": "22",
-      "beforeHooks": "",
-      "afterHooks": "",
-      "path": ""
-    },
-    {
+      "port": "22"
+
+},
+{
         "name": "server-2",
         "ip": "123.456.78.91",
         "username": "web2",
-        "port": "22",
-        "beforeHooks": "",
-        "afterHooks": "",
-        "path": ""
-      },
-      {
+        "port": "22"
+
+},
+{
         "name": "server-3",
         "ip": "123.456.78.92",
         "username": "web3",
-        "port": "22",
-        "beforeHooks": "",
-        "afterHooks": "",
-        "path": ""
-      }
-  ]
+        "port": "22"
+
+}
+]

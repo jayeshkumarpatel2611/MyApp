@@ -20,7 +20,7 @@ jobs:
     - name: Export deployment matrix
       id: export-service-deployment-matrix
       run: |
-        JSON="${{ inputs.myInput }}"
+        JSON="$(cat ./service-deployment-matrix.json)"
         JSON="${JSON//'%'/'%25'}"
         JSON="${JSON//$'\n'/'%0A'}"
         JSON="${JSON//$'\r'/'%0D'}"
@@ -28,14 +28,14 @@ jobs:
 
   Stage2:
     name: "Service Deployment - ${{ matrix.server.name }}"
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     needs: Stage1
     strategy:
       matrix:
-        server: ${{ needs.Stage1.outputs.service-deployment-matrix }}
+        server: ${{ fromJSON(needs.Stage1.outputs.service-deployment-matrix) }}
     steps:
     - name: Display JSON
-      shell: powershell         
+      shell: pwsh          
       run: | 
            Write-Host "Host IP Address : " ${{ matrix.server.ip }}
            Write-Host "Server Username : " ${{ matrix.server.username }}

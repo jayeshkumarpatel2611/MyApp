@@ -1,8 +1,13 @@
-name: Deploy Application
+name: Deploy Service
+on: 
+   workflow_dispatch:
+    
+    inputs:
+      myInput:
+        default: "Input JSON Object"
+        required: true
+        type: string
 
-on:
-  push:
-    branches: [ master ]
 
 jobs:
   Stage1:
@@ -16,7 +21,7 @@ jobs:
     - name: Export deployment matrix
       id: export-service-deployment-matrix
       run: |
-        JSON="$(cat ./service-deployment-matrix.json)"
+        JSON="$(cat ${{ {{ inputs.myInput }})"
         JSON="${JSON//'%'/'%25'}"
         JSON="${JSON//$'\n'/'%0A'}"
         JSON="${JSON//$'\r'/'%0D'}"

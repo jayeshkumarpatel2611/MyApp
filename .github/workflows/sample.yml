@@ -16,10 +16,10 @@ jobs:
     - name: Export deployment matrix
       id: export-service-deployment-matrix
       run: |
-        JSON="$(cat ./service-deployment-matrix.json)"
-        JSON="${JSON//'%'/'%25'}"
-        JSON="${JSON//$'\n'/'%0A'}"
-        JSON="${JSON//$'\r'/'%0D'}"
+        JSON=\"$(cat ./service-deployment-matrix.json)"
+        JSON=\"${JSON//'%'/'%25'}"
+        JSON=\"${JSON//$'\n'/'%0A'}"
+        JSON=\"${JSON//$'\r'/'%0D'}"
         echo "::set-output name=service-deployment-matrix::$JSON"
 
   Stage2:

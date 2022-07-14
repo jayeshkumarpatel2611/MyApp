@@ -32,7 +32,7 @@ jobs:
     needs: Stage1
     strategy:
       matrix:
-        server: ${{ fromJSON(needs.Stage1.outputs.service-deployment-matrix) }}
+        server: ${{ toJSON(fromJSON(needs.Stage1.outputs.service-deployment-matrix)) }}
     steps:
     - name: Display JSON
       shell: pwsh          

@@ -20,7 +20,7 @@ jobs:
     - name: Export deployment matrix
       id: export-service-deployment-matrix
       run: |
-        JSON="${{ github.event.inputs.myInput }}"
+        JSON="$(cat ./service-deployment-matrix.json)"
         JSON="${JSON//'%'/'%25'}"
         JSON="${JSON//$'\n'/'%0A'}"
         JSON="${JSON//$'\r'/'%0D'}"

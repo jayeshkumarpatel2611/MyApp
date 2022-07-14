@@ -21,7 +21,7 @@ jobs:
     - name: Export deployment matrix
       id: export-service-deployment-matrix
       run: |
-        JSON="${{ inputs.myInput }}"
+        JSON="${{ toJSON(${{ inputs.myInput }}) }}"
         JSON="${JSON//'%'/'%25'}"
         JSON="${JSON//$'\n'/'%0A'}"
         JSON="${JSON//$'\r'/'%0D'}"

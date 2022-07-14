@@ -6,7 +6,7 @@ on:
 
 jobs:
   Stage1:
-    name: Create deployment artifacts
+    name: "Reading JSON Object"
     runs-on: ubuntu-latest
     outputs:
       service-deployment-matrix: ${{ steps.export-service-deployment-matrix.outputs.deployment-matrix }}

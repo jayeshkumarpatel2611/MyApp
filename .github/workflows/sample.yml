@@ -31,7 +31,7 @@ jobs:
         server: ${{ fromJson(needs.Stage1.outputs.service-deployment-matrix) }}
     steps:
     - name: Display JSON
-      shell: powershell          
+      shell: pwsh          
       run: | 
            Write-Host "Host IP Address : " ${{ matrix.server.ip }}
            Write-Host "Server Username : " ${{ matrix.server.username }}

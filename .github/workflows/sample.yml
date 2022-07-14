@@ -30,12 +30,6 @@ jobs:
       matrix:
         server: ${{ fromJson(needs.Stage1.outputs.service-deployment-matrix) }}
     steps:
-    - name: Deploying Services
-      with:
-        host: ${{ matrix.server.ip }}
-        username: ${{ matrix.server.username }}
-        port: ${{ matrix.server.port }}
-
     - name: Display JSON
       shell: powershell          
       run: | 

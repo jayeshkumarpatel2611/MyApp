@@ -24,7 +24,7 @@ jobs:
         JSON="${JSON//'%'/'%25'}"
         JSON="${JSON//$'\n'/'%0A'}"
         JSON="${JSON//$'\r'/'%0D'}"
-        echo "::set-output name=service-deployment-matrix::$JSON"
+        echo "::set-output name=service-deployment-matrix::${JSON}"
 
   Stage2:
     name: "Service Deployment - ${{ matrix.server.name }}"
@@ -32,7 +32,7 @@ jobs:
     needs: Stage1
     strategy:
       matrix:
-        server: ${{ toJSON(fromJSON(needs.Stage1.outputs.service-deployment-matrix)) }}
+        server: ${{ fromJSON(needs.Stage1.outputs.service-deployment-matrix) }}
     steps:
     - name: Display JSON
       shell: pwsh          

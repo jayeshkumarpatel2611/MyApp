@@ -56,7 +56,7 @@ jobs:
     steps:
     - run: echo "${{ matrix.location.locations.displayName }} Approved"    
   
-  EnvironmentTypes:
+  EnvironmentType:
     name: "${{ matrix.envType.envTypes.displayName }}"
     runs-on: ubuntu-latest
     needs: [ReadJSON,Location]
@@ -66,10 +66,10 @@ jobs:
     steps:
     - run: echo "${{ matrix.envType.envTypes.displayName }} Approved"        
 
-  Environments:
+  Environment:
     name: "${{ matrix.env.envTypes.envs.displayName }}"
     runs-on: ubuntu-latest
-    needs: [ReadJSON,EnvironmentTypes]
+    needs: [ReadJSON,EnvironmentType]
     strategy:
       matrix:
         env: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix) }}

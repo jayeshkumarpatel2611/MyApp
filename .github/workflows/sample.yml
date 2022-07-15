@@ -32,7 +32,7 @@ jobs:
     needs: [ReadJSON]
     strategy:
       matrix:
-        ring: ${{ fromJSON(needs.Stage1.outputs.service-deployment-matrix) }}
+        ring: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix) }}
     steps:
     - run: echo "${{ matrix.ring.displayName }} Approved"
 
@@ -42,7 +42,7 @@ jobs:
     needs: [ReadJSON,Ring]
     strategy:
       matrix:
-        ring: ${{ fromJSON(needs.Stage1.outputs.service-deployment-matrix) }}
+        ring: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix) }}
     steps:
     - run: echo "${{ matrix.ring.regions.displayName }} Approved" 
     
@@ -52,7 +52,7 @@ jobs:
     needs: [ReadJSON,Region]
     strategy:
       matrix:
-        ring: ${{ fromJSON(needs.Stage1.outputs.service-deployment-matrix) }}
+        ring: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix) }}
     steps:
     - run: echo "${{ matrix.ring.locations.displayName }} Approved"          
 

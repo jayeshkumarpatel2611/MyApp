@@ -42,37 +42,37 @@ jobs:
     needs: [ReadJSON,Ring]
     strategy:
       matrix:
-        ring: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix).regions }}
+        regions: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix) }}
     steps:
-    - run: echo "${{ matrix.ring.displayName }} Approved" 
+    - run: echo "${{ matrix.regions.displayName }} Approved" 
     
   Location:
-    name: "${{ matrix.ring.locations.displayName.displayName }}"
+    name: "${{ matrix.ring.locations.displayName }}"
     runs-on: ubuntu-latest
     needs: [ReadJSON,Region]
     strategy:
       matrix:
-        ring: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix) }}
+        locations: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix) }}
     steps:
-    - run: echo "${{ matrix.ring.locations.displayName }} Approved"    
+    - run: echo "${{ matrix.locations.displayName }} Approved"    
   
   EnvironmentTypes:
-    name: "${{ matrix.ring.envTypes.displayName }}"
+    name: "${{ matrix.envTypes.displayName }}"
     runs-on: ubuntu-latest
     needs: [ReadJSON,Location]
     strategy:
       matrix:
-        ring: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix) }}
+        envTypes: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix) }}
     steps:
-    - run: echo "${{ matrix.ring.envTypes.displayName }} Approved"        
+    - run: echo "${{ matrix.envTypes.displayName }} Approved"        
 
   Environments:
-    name: "${{ matrix.ring.envTypes.envs.displayName }}"
+    name: "${{ matrix.envs.envTypes.envs.displayName }}"
     runs-on: ubuntu-latest
     needs: [ReadJSON,EnvironmentTypes]
     strategy:
       matrix:
-        ring: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix) }}
+        envs: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix) }}
     steps:
-    - run: echo "${{ matrix.ring.envTypes.envs.displayName }} Approved"
+    - run: echo "${{ matrix.envs.envTypes.envs.displayName }} Approved"
  

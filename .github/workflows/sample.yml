@@ -37,14 +37,14 @@ jobs:
     - run: echo "${{ matrix.ring.displayName }} Approved"
 
   Region:
-    name: "${{ matrix.ring.regions.displayName }}"
+    name: "${{ matrix.ring.displayName }}"
     runs-on: ubuntu-latest
     needs: [ReadJSON,Ring]
     strategy:
       matrix:
-        ring: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix) }}
+        ring: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix).regions }}
     steps:
-    - run: echo "${{ matrix.ring.regions }} Approved" 
+    - run: echo "${{ matrix.ring.displayName }} Approved" 
     
   Location:
     name: "${{ matrix.ring.locations.displayName.displayName }}"

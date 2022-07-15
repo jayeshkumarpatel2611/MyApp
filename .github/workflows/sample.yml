@@ -54,7 +54,25 @@ jobs:
       matrix:
         ring: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix) }}
     steps:
-    - run: echo "${{ matrix.ring.locations.displayName }} Approved"          
+    - run: echo "${{ matrix.ring.locations.displayName }} Approved"    
+  
+  EnvironmentTypes:
+    name: "${{ matrix.ring.envTypes.displayName }}"
+    runs-on: ubuntu-latest
+    needs: [ReadJSON,Location]
+    strategy:
+      matrix:
+        ring: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix) }}
+    steps:
+    - run: echo "${{ matrix.ring.envTypes.displayName }} Approved"        
 
-
+  Environments:
+    name: "${{ matrix.ring.envTypes.envs.displayName }}"
+    runs-on: ubuntu-latest
+    needs: [ReadJSON,EnvironmentTypes]
+    strategy:
+      matrix:
+        ring: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix) }}
+    steps:
+    - run: echo "${{ matrix.ring.envTypes.envs.displayName }} Approved"
  

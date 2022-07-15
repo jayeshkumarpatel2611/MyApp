@@ -48,7 +48,7 @@ jobs:
       matrix:
         region: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-regions) }}
     steps:
-    - run: echo "${{ matrix.region.regions.displayName }} Approved" 
+    - run: echo "${{ matrix.region.displayName }} Approved" 
     
   Location:
     name: "${{ matrix.location.displayName }}"
@@ -58,7 +58,7 @@ jobs:
       matrix:
         location: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-locations) }}
     steps:
-    - run: echo "${{ matrix.location.locations.displayName }} Approved"    
+    - run: echo "${{ matrix.location.displayName }} Approved"    
   
   EnvironmentType:
     name: "${{ matrix.envType.displayName }}"
@@ -68,7 +68,7 @@ jobs:
       matrix:
         envType: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-envTypes) }}
     steps:
-    - run: echo "${{ matrix.envType.envTypes.displayName }} Approved"        
+    - run: echo "${{ matrix.envType.displayName }} Approved"        
 
   Environment:
     name: "${{ matrix.env.displayName }}"
@@ -78,5 +78,5 @@ jobs:
       matrix:
         env: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-env) }}
     steps:
-    - run: echo "${{ matrix.env.envTypes.envs.displayName }} Approved"
+    - run: echo "${{ matrix.env.displayName }} Approved"
  

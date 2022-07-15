@@ -1,12 +1,6 @@
 name: Deploy Service
 on: 
    workflow_dispatch:
-    
-    inputs:
-      myInput:
-        required: false
-        type: string
-
 
 jobs:
   ReadJSON:
@@ -28,7 +22,7 @@ jobs:
         Regions="$(cat ./service-deployment-matrix.json | jq '.regions[]' )"
         Locations="$(cat ./service-deployment-matrix.json | jq '.regions[]' | jq '.locations[]' )"
         EnvTypes="$(cat ./service-deployment-matrix.json | jq '.regions[]' | jq '.locations[]' | jq '.envTypes[]' )"
-        Env="$(cat ./service-deployment-matrix.json | jq '.regions[]' | jq '.locations[]' | jq '.envTypes[]' | jq '.envs[] )"
+        Env="$(cat ./service-deployment-matrix.json | jq '.regions[]' | jq '.locations[]' | jq '.envTypes[]' | jq '.envs[]' )"
 
         echo "::set-output name=service-deployment-ring::$Ring"
         echo "::set-output name=service-deployment-regions::$Regions"

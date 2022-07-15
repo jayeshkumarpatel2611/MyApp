@@ -44,7 +44,7 @@ jobs:
       matrix:
         ring: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix) }}
     steps:
-    - run: echo "${{ matrix.ring.regions.displayName }} Approved" 
+    - run: echo "${{ matrix.ring.regions }} Approved" 
     
   Location:
     name: "${{ matrix.ring.locations.displayName }}"

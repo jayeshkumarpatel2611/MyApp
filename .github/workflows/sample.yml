@@ -36,7 +36,7 @@ jobs:
     needs: [ReadJSON]
     strategy:
       matrix:
-        ring: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-matrix) }}
+        ring: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-ring) }}
     steps:
     - run: echo "${{ matrix.ring.displayName }} Approved"
 

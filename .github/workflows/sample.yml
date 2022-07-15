@@ -24,11 +24,11 @@ jobs:
         EnvTypes="$(cat ./service-deployment-matrix.json | jq '.regions[]' | jq '.locations[]' | jq '.envTypes[]' )"
         Env="$(cat ./service-deployment-matrix.json | jq '.regions[]' | jq '.locations[]' | jq '.envTypes[]' | jq '.envs[]' )"
 
-        echo "::set-output name=service-deployment-ring::$Ring"
-        echo "::set-output name=service-deployment-regions::$Regions"
-        echo "::set-output name=service-deployment-locations::$Locations"
-        echo "::set-output name=service-deployment-envTypes::$EnvTypes"
-        echo "::set-output name=service-deployment-env::$Env"
+        echo "::set-output name=service-deployment-ring::${Ring}"
+        echo "::set-output name=service-deployment-regions::${Regions}"
+        echo "::set-output name=service-deployment-locations::${Locations}"
+        echo "::set-output name=service-deployment-envTypes::${EnvTypes}"
+        echo "::set-output name=service-deployment-env::${Env}"
 
   Ring:
     name: "${{ matrix.ring.displayName }}"

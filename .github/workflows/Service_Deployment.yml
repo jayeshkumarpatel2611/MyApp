@@ -45,7 +45,7 @@ jobs:
     with:
       ringLevel: "Ring_0"
       serviceHost: "scmtechmob221.techpss.lan"
-      appDomainAccount: "techpss\pohservices"
+      appDomainAccount: "techpss\\pohservices"
       envName: "MOB221"
       HWSServer: "SCMTECHMOB221"
       HCServer: "SCMTECHMOB221"
@@ -75,7 +75,7 @@ jobs:
     with:
       ringLevel: "Ring_0"
       serviceHost: "POHSCMHC01"
-      appDomainAccount: "Corporate\svc_pohuser"
+      appDomainAccount: "Corporate\\svc_pohuser"
       envName: "scmdevops210c"
       HWSServer: "POHSCMHWS01"
       HCServer: "POHSCMHC01"

@@ -244,13 +244,21 @@ Write-Host "Depends On: " $location.displayName
 foreach($env in $location.envTypes.envs)
 {
 
+$appDomainAccount = $env.appDomainAccount
+$pos = $appDomainAccount.IndexOf("\")
+$leftPart = $appDomainAccount.Substring(0, $pos)
+$rightPart = $appDomainAccount.Substring($pos+1)
+$appDomainAccount = $leftPart + "\\" + $rightPart
+
+Write-Host "appDomainAccount: " $appDomainAccount
+
 Add-Content -Path $ymlFilePath -Value "   $($env.name):"
 Add-Content -Path $ymlFilePath -Value "    uses: ./.github/workflows/deployment-template_prod.yml"
 Add-Content -Path $ymlFilePath -Value "    needs: $($envType.name)"
 Add-Content -Path $ymlFilePath -Value "    with:"
 Add-Content -Path $ymlFilePath -Value "      ringLevel: `"$($ring.name)`""
 Add-Content -Path $ymlFilePath -Value "      serviceHost: `"$($env.serviceHost)`""
-Add-Content -Path $ymlFilePath -Value "      appDomainAccount: `"$($env.appDomainAccount)`""
+Add-Content -Path $ymlFilePath -Value "      appDomainAccount: `"$($appDomainAccount)`""
 Add-Content -Path $ymlFilePath -Value "      envName: `"$($env.envName)`""
 Add-Content -Path $ymlFilePath -Value "      HWSServer: `"$($env.HWSServer)`""
 Add-Content -Path $ymlFilePath -Value "      HCServer: `"$($env.HCServer)`""

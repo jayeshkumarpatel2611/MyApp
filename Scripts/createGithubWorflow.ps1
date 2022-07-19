@@ -165,3 +165,20 @@ Write-Host "------------------------------------------"
 
 
 }
+
+$content = [convert]::ToBase64String((Get-Content -Path "$($ymlFilePath)" -Encoding byte))
+
+$headers = @{"Accept"="application/json"; "Authorization"="bearer $Token"}
+
+$payload = @{ "ref"="refs/heads/main"; "message" = "New Service Deployment Github WorkFlow"; "content" = "$($content)"  }
+$body = $payload | ConvertTo-Json
+$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/service_deployment.yml"
+
+$WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method Put
+
+if($WebObj.StatusCode -match '201' -and $WebObj.StatusDescription -match 'Created')
+{
+
+Write-Host "service_deployment workflow created successfully!" -ForegroundColor Green
+
+}

@@ -27,4 +27,4 @@ jobs:
       - name : Create Github WorkFlow      
         shell: pwsh
         run : |
-                Scripts\createGithubWorflow.ps1 -Ring "${{ github.event.inputs.Ring }}" -Token ${{ secrets.MYAPPTOKEN }}
+                Scripts\createGithubWorflow.ps1 -Ring "${{ github.event.inputs.Ring }}" -Token "${{ secrets.MYAPPTOKEN }}"

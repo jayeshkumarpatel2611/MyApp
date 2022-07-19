@@ -320,12 +320,10 @@ Write-Host "Failed to upload service_deployment.yml workflow!" -ForegroundColor 
 
 }
 
-<#
+
 # Dispatching Created POS Service Deployment Workflow
 
-$WebObj = ""
-
-$headers = @{"Accept"="application/vnd.github.v3+json"; "Authorization"="token $Token"}
+$headers = @{"Accept"="application/json"; "Authorization"="bearer $Token"}
 
 $payload = @{ "ref"="refs/heads/master" }
 
@@ -347,4 +345,4 @@ else
 Write-Host "Failed to dispatch service_deployment.yml workflow!" -ForegroundColor Red
 
 }
-#>
+

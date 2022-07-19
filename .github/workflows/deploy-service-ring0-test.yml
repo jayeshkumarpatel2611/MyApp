@@ -9,11 +9,19 @@ on:
 
 jobs:
   createGithubWorkFlow:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
+      - name: Install PowerShell
+        run: |
+             sudo apt-get update
+             sudo apt-get install -y wget apt-transport-https software-properties-common
+             wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb"
+             sudo dpkg -i packages-microsoft-prod.deb
+             sudo apt-get update
+             sudo apt-get install -y powershell
       - name: checkout action files
         uses: actions/checkout@v2 
       - name : Create Github WorkFlow for POH Service Deployment     
-        shell: powershell
+        shell: pwsh
         run: |
              .\Scripts\createGithubWorflow.ps1 -RingInfo "${{ inputs.RingInfo }}" -Token "${{ secrets.MYAPPTOKEN }}"

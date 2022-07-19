@@ -8,31 +8,12 @@ on:
             required: true
 
 jobs:
-
-  ReadJSON:
-    name: "Reading JSON Object"
-    runs-on: ubuntu-latest
-    outputs:
-      service-deployment: ${{ steps.export-service-deployment-matrix.outputs.service-deployment }}
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Export deployment matrix
-      id: export-service-deployment-matrix
-      run: |
-        Ring="$( echo '${{ inputs.RingInfo }}' | jq '.[]' | jq -s '.' )"
-        Ring="${Ring//'%'/'%25'}"
-        Ring="${Ring//$'\n'/'%0A'}"
-        Ring="${Ring//$'\r'/'%0D'}"
-        echo "::set-output name=service-deployment::$Ring"
-        
   createGithubWorkFlow:
     runs-on: windows-latest
-    needs: ReadJSON
     steps:
       - name: checkout action files
         uses: actions/checkout@v2 
       - name : Create Github WorkFlow for POH Service Deployment     
         shell: powershell
         run: |
-             .\Scripts\createGithubWorflow.ps1 -Token '${{ secrets.MYAPPTOKEN }}' -RingInfo '${{ needs.ReadJSON.outputs.service-deployment}}'
+             .\Scripts\createGithubWorflow.ps1 -Token '${{ secrets.MYAPPTOKEN }}' -RingInfo '${{ inputs.RingInfo }}'

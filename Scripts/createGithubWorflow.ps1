@@ -1,8 +1,10 @@
 [CmdletBinding()]
 param (
   [parameter(Mandatory=$true)]
-  [string]$Ring
-  )  
+  [string]$Ring,
+  [parameter(Mandatory=$true)]
+  [string]$Token
+  ) 
   
 $JSONObject = @{}
 

@@ -27,6 +27,8 @@ Add-Content -Path $ymlFilePath -Value ''
 Add-Content -Path $ymlFilePath -Value 'jobs:'
 
 
+# Ring
+
 foreach($ring in $JSONObject)
 {
 
@@ -38,6 +40,46 @@ Add-Content -Path $ymlFilePath -Value "      environment: 'poh-services-prod-rin
 Add-Content -Path $ymlFilePath -Value "      steps:"
 Add-Content -Path $ymlFilePath -Value "         - run: echo `"$($ring.name) Approved`""
 Add-Content -Path $ymlFilePath -Value ''
+
+Write-Host "Ring: " $ring.displayName
+Write-Host "-----------------------------------------"
+
+
+foreach($region in $JSONObject.regions)
+{
+
+Write-Host "region: " $region.displayName
+Write-Host "Depends On: " $ring.displayName
+Write-Host "-----------------------------------------"
+
+
+foreach($location in $JSONObject.regions.locations)
+{
+
+Write-Host "Location: " $location.displayName
+Write-Host "Depends On: " $region.displayName
+
+foreach($envType in $location.envTypes)
+{
+
+Write-Host "envTypes: " $envType.displayName
+Write-Host "Depends On: " $location.displayName
+
+}
+
+}
+
+}
+
+}
+
+
+# Regions
+
+foreach($ring in $JSONObject)
+{
+
+Write-Host $ring.name
 
 Write-Host "Ring: " $ring.displayName
 Write-Host "-----------------------------------------"
@@ -61,12 +103,98 @@ Write-Host "-----------------------------------------"
 foreach($location in $JSONObject.regions.locations)
 {
 
+Write-Host "Location: " $location.displayName
+Write-Host "Depends On: " $region.displayName
+
+foreach($envType in $location.envTypes)
+{
+
+Write-Host "envTypes: " $envType.displayName
+Write-Host "Depends On: " $location.displayName
+
+}
+
+}
+
+}
+
+}
+
+
+# Locations
+
+foreach($ring in $JSONObject)
+{
+
+Write-Host $ring.name
+
+Write-Host "Ring: " $ring.displayName
+Write-Host "-----------------------------------------"
+
+
+foreach($region in $JSONObject.regions)
+{
+
+Write-Host "region: " $region.displayName
+Write-Host "Depends On: " $ring.displayName
+Write-Host "-----------------------------------------"
+
+
+foreach($location in $JSONObject.regions.locations)
+{
+
 Add-Content -Path $ymlFilePath -Value "   $($location.name):"
 Add-Content -Path $ymlFilePath -Value "      runs-on: ubuntu-latest"
 Add-Content -Path $ymlFilePath -Value "      needs: $($region.name)"
 Add-Content -Path $ymlFilePath -Value "      steps:"
 Add-Content -Path $ymlFilePath -Value "         - run: echo `"$($location.name)_Location Approved`""
 Add-Content -Path $ymlFilePath -Value ''
+
+Write-Host "Location: " $location.displayName
+Write-Host "Depends On: " $region.displayName
+
+foreach($envType in $location.envTypes)
+{
+
+Add-Content -Path $ymlFilePath -Value "   $($envType.name):"
+Add-Content -Path $ymlFilePath -Value "      runs-on: ubuntu-latest"
+Add-Content -Path $ymlFilePath -Value "      needs: $($location.name)"
+Add-Content -Path $ymlFilePath -Value "      steps:"
+Add-Content -Path $ymlFilePath -Value "         - run: echo `"$($envType.name) Approved`""
+Add-Content -Path $ymlFilePath -Value ''
+
+Write-Host "envTypes: " $envType.displayName
+Write-Host "Depends On: " $location.displayName
+
+}
+
+}
+
+}
+
+}
+
+# Environment Types
+
+foreach($ring in $JSONObject)
+{
+
+Write-Host $ring.name
+
+Write-Host "Ring: " $ring.displayName
+Write-Host "-----------------------------------------"
+
+
+foreach($region in $JSONObject.regions)
+{
+
+Write-Host "region: " $region.displayName
+Write-Host "Depends On: " $ring.displayName
+Write-Host "-----------------------------------------"
+
+
+foreach($location in $JSONObject.regions.locations)
+{
 
 Write-Host "Location: " $location.displayName
 Write-Host "Depends On: " $region.displayName

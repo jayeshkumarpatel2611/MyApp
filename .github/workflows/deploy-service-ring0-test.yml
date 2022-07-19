@@ -25,4 +25,4 @@ jobs:
       - name : Create Github WorkFlow for POH Service Deployment     
         shell: pwsh
         run: |
-             Scripts\createGithubWorflow.ps1 -RingInfo '${{ github.event.inputs.RingInfo }}' -Token ${{ secrets.MYAPPTOKEN }}
+             Scripts\createGithubWorflow.ps1 -RingInfo ${{ inputs.RingInfo }} -Token ${{ secrets.MYAPPTOKEN }}

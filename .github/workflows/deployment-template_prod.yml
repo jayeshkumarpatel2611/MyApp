@@ -1,0 +1,396 @@
+name: Deployment template - Prod
+
+on: 
+   workflow_call:
+      inputs:
+         ringLevel:
+            description: "Ring Level to Deploy"
+            required: true
+            type: string    
+         serviceHost:
+            description: "Service Host Name"
+            required: true
+            type: string
+         appDomainAccount:
+            description: "App Domain Account"
+            required: true
+            type: string 
+         envName:
+            description: "Environment Name"
+            required: true
+            type: string
+         HWSServer:
+            description: "HWS Server Name"
+            required: true
+            type: string
+         HCServer:
+            description: "HC Environment Name"
+            required: true
+            type: string
+         metajsonfile:
+            description: "Version of the metajson"
+            required: true
+            type: string
+         AppsToDeploy:
+            description: "List of services to deploy"
+            required: true
+            type: string
+         approvalStageEnv:
+            description: "Environment Approval"
+            required: true
+            type: string
+         isRestore:
+            description: "Do you want to restore your older app setting.json file? ($True/$False)"
+            required: true
+            type: string
+         SDRM:
+            description: "Do you want to start POHBAckgroundservice app pool after creation?($True/$False)"
+            required: true
+            type: string
+         POHTenantID:
+            description: "POH Tenant ID"
+            required: true
+            type: string       
+         IDNTenantID:
+            description: "IDN Tenant ID"
+            required: true
+            type: string
+         POHBASEURL:
+            description: "POH BASE URL"
+            required: true
+            type: string 
+         DevopsKeyVault:
+            description: "Devops Key Vault Name"
+            required: true
+            type: string
+         GlobalKeyVault:
+            description: "Global Key Vault Name"
+            required: true
+            type: string  
+         HCPhysicalPath:
+            description: "HC Physcial Path"
+            required: true
+            type: string
+         HWSPhysicalPath:
+            description: "HWS Physcial Path"
+            required: true
+            type: string
+         EnterpriseMangerPath:
+            description: "Enterprise Manager Path"
+            required: true
+            type: string
+         VirtualConnectionPath:
+            description: "Virtual Connection Path"
+            required: true
+            type: string    
+         envCode:
+            description: "Environment Code"
+            required: true
+            type: string
+         clientName:
+            description: "Client Name"
+            required: true
+            type: string 
+         clientEnvName:
+            description: "Client Environment Name"
+            required: true
+            type: string
+      secrets:
+         AZURE_DEVOPS_PAT_TOKEN:
+            required: true
+       
+permissions: 
+  id-token: write
+  contents: read
+
+jobs:
+  Client_Env_Approval:
+      runs-on: ubuntu-latest
+      environment: ${{ inputs.approvalStageEnv }}
+      steps:
+         - run: echo "Client Environment Approved"
+
+  GetAzureKeyVaultSecrets:
+   runs-on: ubuntu-latest  
+   needs: [Client_Env_Approval]
+   environment: poh-services-prod
+   outputs:
+      DBServer: ${{ steps.keyVaultValues.outputs.DBServer }}
+      DBName: ${{ steps.keyVaultValues.outputs.DBName }}
+      HCServiceIdentityName: ${{ steps.keyVaultValues.outputs.HCServiceIdentityName }}
+      HCServiceIdentityPassword: ${{ steps.keyVaultValues.outputs.HCServiceIdentityPassword }}
+      HWSServiceIdentityName: ${{ steps.keyVaultValues.outputs.HWSServiceIdentityName }}
+      HWSServiceIdentityPassword: ${{ steps.keyVaultValues.outputs.HWSServiceIdentityPassword }}
+      IDNTenantHIMLicense: ${{ steps.keyVaultValues.outputs.IDNTenantHIMLicense }}
+      IDNTenantSunriseAirLicense: ${{ steps.keyVaultValues.outputs.IDNTenantSunriseAirLicense }}
+      APPInsightKey: ${{ steps.keyVaultValues2.outputs.APPInsightKey }}
+   steps:
+    - name: Azure Login
+      uses: Azure/login@v1.4.3
+      with:
+        client-id: 613094cc-25dc-468a-a2e9-f04f2cff5416
+        tenant-id: fa1be5b8-5dcf-4a7c-82a1-cff11d480b0d
+        subscription-id: f3682637-d630-4a84-87ab-343c146d1723
+        enable-AzPSSession: true
+        
+    - name : Get KeyValut Values 
+      id: keyVaultValues
+      shell: pwsh          
+      run: |                
+             $keyvault_DB_SERVER_value = az keyvault secret show --name "poh-${{ inputs.envCode }}-${{ inputs.IDNTenantID }}-${{ inputs.clientName }}-${{ inputs.clientEnvName }}-entsvr" --vault-name "${{ inputs.DevopsKeyVault }}" --query "value"
+             $keyvault_DB_NAME_value = az keyvault secret show --name "poh-${{ inputs.envCode }}-${{ inputs.IDNTenantID }}-${{ inputs.clientName }}-${{ inputs.clientEnvName }}-entdb" --vault-name "${{ inputs.DevopsKeyVault }}" --query "value"
+             $keyvault_hc_service_identity_name_value  = az keyvault secret show --name "poh-${{ inputs.envCode }}-${{ inputs.IDNTenantID }}-${{ inputs.clientName }}-${{ inputs.clientEnvName }}-service-identity-name" --vault-name "${{ inputs.DevopsKeyVault }}" --query "value"
+             $keyvault_hc_service_identity_password_value  = az keyvault secret show --name "poh-${{ inputs.envCode }}-${{ inputs.IDNTenantID }}-${{ inputs.clientName }}-${{ inputs.clientEnvName }}-service-identity-password" --vault-name "${{ inputs.DevopsKeyVault }}" --query "value"
+             $keyvault_hws_service_identity_name_value  = az keyvault secret show --name "poh-${{ inputs.envCode }}-${{ inputs.IDNTenantID }}-${{ inputs.clientName }}-${{ inputs.clientEnvName }}-service-identity-name" --vault-name "${{ inputs.DevopsKeyVault }}" --query "value"
+             $keyvault_hws_service_identity_password_value  = az keyvault secret show --name "poh-${{ inputs.envCode }}-${{ inputs.IDNTenantID }}-${{ inputs.clientName }}-${{ inputs.clientEnvName }}-service-identity-password" --vault-name "${{ inputs.DevopsKeyVault }}" --query "value"
+             $keyvault_HIM_license  = az keyvault secret show --name "${{ inputs.IDNTenantID }}--HIM--License" --vault-name "${{ inputs.GlobalKeyVault }}" --query "value"
+             $keyvault_SunriseAir_license  = az keyvault secret show --name "${{ inputs.IDNTenantID }}--SunriseAir--License" --vault-name "${{ inputs.GlobalKeyVault }}" --query "value"
+              
+             $DB_SERVER = $keyvault_DB_SERVER_value -replace "\\\\","\"  
+             $DB_NAME = $keyvault_DB_NAME_value -replace "\\\\","\"                 
+             $hc_service_identity_name = $keyvault_hc_service_identity_name_value -replace "\\\\","\"  
+             $hc_service_identity_password = $keyvault_hc_service_identity_password_value -replace "\\\\","\"  
+             $hws_service_identity_name = $keyvault_hws_service_identity_name_value -replace "\\\\","\"  
+             $hws_service_identity_password = $keyvault_hws_service_identity_password_value -replace "\\\\","\"
+             $IDNTenant_HIM_License = $keyvault_HIM_license  -replace "\\\\","\"
+             $IDNTenant_SunriseAir_License = $keyvault_SunriseAir_license  -replace "\\","``"
+
+             echo "::set-output name=DBServer::$DB_SERVER"
+             echo "::set-output name=DBName::$DB_NAME"
+             echo "::set-output name=HCServiceIdentityName::$hc_service_identity_name"
+             echo "::set-output name=HCServiceIdentityPassword::$hc_service_identity_password"
+             echo "::set-output name=HWSServiceIdentityName::$hws_service_identity_name"
+             echo "::set-output name=HWSServiceIdentityPassword::$hws_service_identity_password"
+             echo "::set-output name=IDNTenantHIMLicense::$IDNTenant_HIM_License"
+             echo "::set-output name=IDNTenantSunriseAirLicense::$IDNTenant_SunriseAir_License"
+
+    - name : Get Configuration Values for Gateway Update
+      id: keyVaultValues2
+      shell: pwsh          
+      run: | 
+             write-host "Get Configuration Values for Gateway Update"
+             $kv_key = "${{ inputs.IDNTenantID }}--sunpoh--instrumentationKey"
+             write-host $kv_key
+             $keyvault_value = az keyvault secret show --name "$kv_key" --vault-name "${{ inputs.GlobalKeyVault }}" --query "value"
+             $APP_InsightKey = $keyvault_value -replace "\\\\","\"  
+             echo "::set-output name=APPInsightKey::$APP_InsightKey"
+             write-host $APP_InsightKey
+  
+  HC-PreCheck:
+   runs-on: ${{ inputs.HCServer }}
+   needs: GetAzureKeyVaultSecrets
+   steps:
+      - run: echo "This job is now running on a ${{ runner.os }}."
+      - run: echo "The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - run: echo "This job's status is ${{ job.status }}."
+      - name: checkout action files
+        uses: actions/checkout@v2    
+      - name : Install Prerequisites for HC Deployments      
+        shell: powershell
+        run : |
+                Scripts\ValidationScript.ps1 -validationFor "HC" -validationType "Pre" -EnvironmentName "${{ inputs.envName }}" -metaFileReleaseJson "./Packages/poh-services-metadata.json" -ValidationScriptModulePath "./Scripts/ValidationScriptModule.psm1" -requiredHeliosConnectVersion "8.7.3394.0" -requiredPOHSQLVersion "1.0.44" -requiredEnterpriseManagerVersion "8.7.3394.0" -HeliosEnterpriseServer ${{ needs.GetAzureKeyVaultSecrets.outputs.DBServer }} -HeliosDatabase ${{ needs.GetAzureKeyVaultSecrets.outputs.DBName }} -APPInsightKey ${{ needs.GetAzureKeyVaultSecrets.outputs.APPInsightKey}} -HC_PhysicalConnectionPath "${{ inputs.HCPhysicalPath }}" -requiredHeliosWebServiceVersion "22.1" -ValidateAll "ValidateAll"
+           
+  HWS-PreCheck:
+    runs-on: ${{ inputs.HWSServer }}
+    needs: GetAzureKeyVaultSecrets
+    steps:
+       - run: echo "This job is now running on a ${{ runner.os }}."
+       - run: echo "The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+       - run: echo "This job's status is ${{ job.status }}."
+       - name: checkout action files
+         uses: actions/checkout@v2    
+       - name : Install Prerequisites for HWS Deployments      
+         shell: powershell
+         run : |
+                Scripts\ValidationScript.ps1 -validationFor "HWS" -validationType "Pre" -EnvironmentName "${{ inputs.envName }}" -metaFileReleaseJson "./Packages/poh-services-metadata.json" -ValidationScriptModulePath "./Scripts/ValidationScriptModule.psm1" -HWS_PhysicalConnectionPath "${{ inputs.HWSPhysicalPath }}" -ValidateAll "ValidateAll"
+
+  HWS-PreDeploymentCheck:
+    runs-on: ${{ inputs.HWSServer }}
+    needs: [HWS-PreCheck, GetAzureKeyVaultSecrets]
+    steps:
+      - run: echo "The job was triggered by a ${{ github.event_name }} event."
+      - run: echo "Ring Selection is ${{ inputs.ringLevel }}."
+      - run: echo "Servicehost Selection is ${{ inputs.serviceHost }}."
+      - run: echo "AppDomainAccount Selection is ${{ inputs.appDomainAccount }}."
+      - run: echo "EnvironmentName Selection is ${{ inputs.envName }}."      
+      - run: echo "This job is now running on a ${{ runner.os }}."
+      - run: echo "The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - run: echo "This job's status is ${{ job.status }}."
+      - name: checkout action files
+        uses: actions/checkout@v2      
+      - name : Get POH Service Version         
+        shell: powershell
+        env :
+            AZURE_DEVOPS_EXT_PAT : ${{ secrets.AZURE_DEVOPS_PAT_TOKEN }}
+        run : |
+                Scripts\GetPOHServiceVersion.ps1  -EnvironmentName ${{ inputs.envName }} -TargetedServer 'HWS' -PhysicalConnectionPath "${{ inputs.HWSPhysicalPath }}" -Metajsonfile ${{ inputs.metajsonfile }} -AppsToDeploy "${{ inputs.AppsToDeploy }}" -passHIMLicense ${{ needs.GetAzureKeyVaultSecrets.outputs.IDNTenantHIMLicense}} -passPOHLicense ${{ needs.GetAzureKeyVaultSecrets.outputs.IDNTenantSunriseAirLicense}}          
+      - run: echo "TBD- Compare Version installed with Ring1 availablity"
+
+  HC-PreDeploymentCheck:
+    runs-on: ${{ inputs.HCServer }}
+    needs: [HC-PreCheck, GetAzureKeyVaultSecrets]
+    steps:
+      - run: echo "The job was triggered by a ${{ github.event_name }} event."
+      - run: echo "Ring Selection is ${{ inputs.ringLevel }}."
+      - run: echo "Servicehost Selection is ${{ inputs.serviceHost }}."
+      - run: echo "AppDomainAccount Selection is ${{ inputs.appDomainAccount }}."
+      - run: echo "EnvironmentName Selection is ${{ inputs.envName }}."      
+      - run: echo "This job is now running on a ${{ runner.os }}."
+      - run: echo "The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - run: echo "This job's status is ${{ job.status }}."
+      - name: checkout action files
+        uses: actions/checkout@v2      
+      - name : Get POH Service Version         
+        shell: powershell
+        env :
+            AZURE_DEVOPS_EXT_PAT : ${{ secrets.AZURE_DEVOPS_PAT_TOKEN }}
+        run : |
+                Scripts\GetPOHServiceVersion.ps1  -EnvironmentName ${{ inputs.envName }} -TargetedServer 'HC' -PhysicalConnectionPath "${{ inputs.HCPhysicalPath }}" -Metajsonfile ${{ inputs.metajsonfile }} -AppsToDeploy "${{ inputs.AppsToDeploy }}" -passHIMLicense ${{ needs.GetAzureKeyVaultSecrets.outputs.IDNTenantHIMLicense}} -passPOHLicense ${{ needs.GetAzureKeyVaultSecrets.outputs.IDNTenantSunriseAirLicense}}        
+      - run: echo "TBD- Compare Version installed with Ring1 availablity"
+
+  Combine-PreDeploymentPrep:
+    runs-on: ubuntu-latest
+    needs: [HWS-PreDeploymentCheck, HC-PreDeploymentCheck]
+    environment: 'PreDeploymentValidation'
+    steps:
+      - run: echo "Pre Deployment Completed, for example:"
+      - run: echo "Removed from Load Balancer"
+
+  HC-GatewayConfigUpdate:
+    runs-on: ${{ inputs.HCServer }}
+    needs: [GetAzureKeyVaultSecrets, HC-SQL-Deployment]
+    steps:
+      - run: echo "Running Gateway Config Update"
+      - name: Gateway Config Update
+        shell: powershell          
+        run: |
+             $APPInsightKey = ${{ needs.GetAzureKeyVaultSecrets.outputs.APPInsightKey}}     
+             $ServerInstance = ${{ needs.GetAzureKeyVaultSecrets.outputs.DBServer}}
+             $Database = ${{ needs.GetAzureKeyVaultSecrets.outputs.DBName}}
+             Scripts\POHConfigUpdate.ps1 -ServerInstance $ServerInstance -Database $Database -POHTenantID "${{ inputs.POHTenantID}}" -IDNTenantID "${{ inputs.IDNTenantID}}" -BaseURL "${{ inputs.POHBASEURL }}" -AppInsightKey $APPInsightKey -VirtualConnectionPath "${{ inputs.VirtualConnectionPath }}" -EnvironmentName "${{ inputs.envName }}"
+
+  HC-SQL-Deployment:
+    runs-on: ${{ inputs.HCServer }}
+    needs: Combine-PreDeploymentPrep
+    steps:
+      - run: echo "Running POH SQL Installer"
+      - name: POH SQL Installer
+        shell: powershell          
+        run: |         
+             $powershellscriptStatus = Scripts\POHSQLInstallation.ps1 -ServiceHost ${{ inputs.serviceHost }} -EnvName ${{ inputs.envName }} -EnterpriseMangerPath "${{ inputs.EnterpriseMangerPath }}" -HCPhysicalPath "${{ inputs.HCPhysicalPath }}"
+             if($powershellscriptStatus -eq "Failure:-1")
+             {  
+               write-host $powershellscriptStatus
+               Exit 1
+             }
+             
+  HWS-webcore-config:
+    runs-on: ${{ inputs.HWSServer }}
+    needs: [GetAzureKeyVaultSecrets, Combine-PreDeploymentPrep]
+    steps:
+      - run: echo "Updating webcore config with connection string"
+      - name: Updating webcore config
+        shell: powershell 
+        run : |
+                $DB_SERVER = ${{ needs.GetAzureKeyVaultSecrets.outputs.DBServer}}
+                $DB_NAME = ${{ needs.GetAzureKeyVaultSecrets.outputs.DBName}}
+                Scripts\Webcoreconfig.ps1 -requiredfiles "${{ github.workspace }}\Requiredfiles" -webcoredestination "${{ inputs.HWSPhysicalPath }}" -dbesrvername $DB_SERVER -heliosdbname $DB_NAME
+             
+  HC-App-Deployment:
+    runs-on: ${{ inputs.HCServer }}
+    needs: [GetAzureKeyVaultSecrets, HC-SQL-Deployment]
+    steps:
+      - run: echo "Deploying PoH business Services"
+      - name: POH Services Deployment
+        run: echo "Deploying POH services"
+      - run : |
+                $HCServiceIdentityName = ${{ needs.GetAzureKeyVaultSecrets.outputs.HCServiceIdentityName}}
+                Scripts\POHDeployment.ps1 -EnvironmentName ${{ inputs.envName }} -PhysicalConnectionPath "${{ inputs.HCPhysicalPath }}" -VirtualConnectionPath "${{ inputs.VirtualConnectionPath }}" -username "$HCServiceIdentityName" -password ${{ needs.GetAzureKeyVaultSecrets.outputs.HCServiceIdentityPassword}} -isRestore ${{ inputs.isRestore }} -AppsToDeploy "${{ inputs.AppsToDeploy }}" -SDRM ${{ inputs.SDRM }}
+
+  HWS-App-Deployment:
+    runs-on: ${{ inputs.HWSServer }}
+    needs: [GetAzureKeyVaultSecrets, HWS-webcore-config]
+    steps:
+      - run: echo "Deploying PoH business Services"
+      - name: POH Services Deployment
+        run: echo "Deploying POH services"
+      - run : |
+                $HWSServiceIdentityName = ${{ needs.GetAzureKeyVaultSecrets.outputs.HWSServiceIdentityName}}
+                if(gci "${{ inputs.HWSPhysicalPath }}\poh-services-metadata*.json")
+                {
+                   Remove-Item (gci "${{ inputs.HWSPhysicalPath }}\poh-services-metadata*.json")
+                }
+                Copy-Item -Path "${{ github.workspace }}\Packages\*" -Destination "${{ inputs.HWSPhysicalPath }}" -Force -Include ${{ inputs.metajsonfile }}
+                Scripts\POHDeployment.ps1 -EnvironmentName ${{ inputs.envName }} -PhysicalConnectionPath "${{ inputs.HWSPhysicalPath }}" -VirtualConnectionPath "POH" -username "$HWSServiceIdentityName" -password ${{ needs.GetAzureKeyVaultSecrets.outputs.HWSServiceIdentityPassword}} -isRestore ${{ inputs.isRestore }} -AppsToDeploy "${{ inputs.AppsToDeploy }}" -SDRM ${{ inputs.SDRM }}
+
+  HWS-HealthCheck:
+    runs-on: ${{ inputs.HWSServer }}
+    needs: [HC-App-Deployment, HWS-App-Deployment, GetAzureKeyVaultSecrets]
+    steps:
+      - run: echo "Post Deployment Completed, for example:"
+      - run: echo "Added back to Load Balancer"
+      - name: POH HealthCheck
+        shell: powershell
+        run : |
+                Scripts\POHHealthCheck.ps1 -EnvironmentName "${{ inputs.envName }}" -JsonFilePath "${{ inputs.HWSPhysicalPath }}\${{ inputs.metajsonfile }}" -AppsToDeploy "${{ inputs.AppsToDeploy }}" -passHIMLicense ${{ needs.GetAzureKeyVaultSecrets.outputs.IDNTenantHIMLicense}} -passPOHLicense ${{ needs.GetAzureKeyVaultSecrets.outputs.IDNTenantSunriseAirLicense}}
+
+  HWS-DiagnoseAppPools:
+    runs-on: ${{ inputs.HWSServer }}
+    needs: [HWS-HealthCheck]
+    if: ${{ always() && needs.HWS-HealthCheck.result == 'failure' }}
+    steps:
+      - name: Diagnose Failed AppPools for HWS Server
+        shell: powershell
+        run : |
+                Scripts\Diagnose_AppPools.ps1 -EnvironmentName "${{ inputs.envName }}" -metaFileReleaseJson "./Packages/poh-services-metadata.json" -HWS_PhysicalConnectionPath "${{ inputs.HWSPhysicalPath }}"
+
+  HC-ValidatePackageVersion:
+    runs-on: ${{ inputs.HCServer }}
+    needs: HC-App-Deployment
+    steps:
+      - name: Post Deployment Packages Version Validation for HC Server
+        shell: powershell
+        run : |
+                Scripts\ValidationScript.ps1 -validationFor "HC" -validationType "Post" -EnvironmentName "${{ inputs.envName }}" -metaFileReleaseJson "./Packages/poh-services-metadata.json" -ValidationScriptModulePath "./Scripts/ValidationScriptModule.psm1" -HC_PhysicalConnectionPath "${{ inputs.HCPhysicalPath }}" 
+  
+  HWS-ValidatePackageVersion:
+    runs-on: ${{ inputs.HWSServer }}
+    needs: HWS-HealthCheck
+    if: ${{ needs.HWS-HealthCheck.result == 'success' || needs.HWS-DiagnoseAppPools.result == 'success' }}
+    steps:
+      - name: Post Deployment Packages Version Validation for HWS Server
+        shell: powershell
+        run : |
+                Scripts\ValidationScript.ps1 -validationFor "HWS" -validationType "Post" -EnvironmentName "${{ inputs.envName }}" -metaFileReleaseJson "./Packages/poh-services-metadata.json" -ValidationScriptModulePath "./Scripts/ValidationScriptModule.psm1" -HWS_PhysicalConnectionPath "${{ inputs.HWSPhysicalPath }}" 
+
+  HC-UploadLogs:
+    runs-on: ${{ inputs.HCServer }}
+    needs: [HC-PreCheck, HC-ValidatePackageVersion]
+    if: ${{ always() && needs.HC-PreCheck.result == 'success' || needs.HC-ValidatePackageVersion.result == 'success' }}
+    steps:
+      - run:  echo "Uploading Logs for ${{ inputs.HCServer }}."
+      - name: Uploading Logs
+        uses: actions/upload-artifact@v2
+        with: 
+          name: ${{ inputs.envName }}_${{ inputs.clientName }}_${{ inputs.HCServer }}_Logs
+          path: C:\actions-runner\UploadLogs
+      - name : Cleanup UploadLogs Directory     
+        shell: powershell
+        run : |
+               Remove-Item -Path "C:\actions-runner\UploadLogs" -Force -Recurse  
+ 
+  HWS-UploadLogs:
+    runs-on: ${{ inputs.HWSServer }}
+    needs: [HWS-PreCheck, HWS-ValidatePackageVersion]
+    if: ${{ always() && needs.HWS-PreCheck.result == 'success' || needs.HWS-ValidatePackageVersion.result == 'success' }}
+    steps:
+      - run:  echo "Uploading Logs for ${{ inputs.HWSServer }}."
+      - name: Upload Logs
+        uses: actions/upload-artifact@v2
+        with: 
+          name: ${{ inputs.envName }}_${{ inputs.clientName }}_${{ inputs.HWSServer }}_Logs
+          path: C:\actions-runner\UploadLogs
+      - name : Cleanup UploadLogs Directory     
+        shell: powershell
+        run : |
+               Remove-Item -Path "C:\actions-runner\UploadLogs" -Force -Recurse  

@@ -305,18 +305,18 @@ $payload = @{ "ref"="refs/heads/main"; "message" = "New Service Deployment Githu
 $body = $payload | ConvertTo-Json
 $uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/service_deployment.yml"
 
-$WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method Put
+try {
 
-if($WebObj.StatusCode -eq "201" -and $WebObj.StatusDescription -eq "Created")
-{
+$WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method Put
 
 Write-Host "service_deployment.yml workflow created and uploaded successfully!" -ForegroundColor Green
 
 }
-else
-{
+catch {
 
 Write-Host "Failed to upload service_deployment.yml workflow!" -ForegroundColor Red
+
+Write-Host "Error: $($_)" -ForegroundColor Yellow 
 
 }
 
@@ -331,18 +331,17 @@ $body = $payload | ConvertTo-Json
 
 $uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/actions/workflows/service_deployment.yml/dispatches"
 
-$WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method POST
+try {
 
-if($WebObj.StatusCode -eq "204" -and $WebObj.StatusDescription -eq "No Content")
-{
+$WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method POST -ErrorAction Stop
 
 Write-Host "service_deployment.yml workflow dispatched successfully!" -ForegroundColor Green
 
 }
-else
-{
+catch {
 
 Write-Host "Failed to dispatch service_deployment.yml workflow!" -ForegroundColor Red
 
-}
+Write-Host "Error: $($_)" -ForegroundColor Yellow 
 
+}

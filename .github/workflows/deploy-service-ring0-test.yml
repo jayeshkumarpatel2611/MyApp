@@ -11,11 +11,7 @@ jobs:
   createGithubWorkFlow:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "This job is now running on a ${{ runner.os }}."
       - run: echo "The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - run: echo "This job's status is ${{ job.status }}."
-      - name: checkout action files
-        uses: actions/checkout@v2  
       - name: Install PowerShell
         run: |
              sudo apt-get update
@@ -24,6 +20,8 @@ jobs:
              sudo dpkg -i packages-microsoft-prod.deb
              sudo apt-get update
              sudo apt-get install -y powershell
+      - name: checkout action files
+        uses: actions/checkout@v2 
       - name : Create Github WorkFlow for POH Service Deployment     
         shell: pwsh
         run: |

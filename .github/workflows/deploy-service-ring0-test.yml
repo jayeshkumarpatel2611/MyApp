@@ -19,6 +19,3 @@ jobs:
         run: |
              .\Scripts\createGithubWorflow.ps1 -Token '${{ secrets.MYAPPTOKEN }}' -RingInfo '${{ inputs.RingInfo }}'
   
-  Service_Deployment:
-    uses: ./.github/workflows/service_deployment.yml
-    needs: createGithubWorkFlow

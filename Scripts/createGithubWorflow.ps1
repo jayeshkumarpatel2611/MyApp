@@ -16,7 +16,7 @@ $RingInfo
 
 $JSONObject = "$($RingInfo)" | ConvertFrom-Json
 
-$ymlFilePath = "Ring0.yml" 
+$ymlFilePath = "service_deployment.yml" 
 
 New-Item -Path $ymlFilePath -ItemType File -Force
 
@@ -303,7 +303,7 @@ $headers = @{"Accept"="application/json"; "Authorization"="bearer $Token"}
 
 $payload = @{ "ref"="refs/heads/main"; "message" = "New Service Deployment Github WorkFlow"; "content" = "$($content)"  }
 $body = $payload | ConvertTo-Json
-$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/Ring0.yml"
+$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/service_deployment.yml"
 
 $WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method Put
 
@@ -311,5 +311,39 @@ if($WebObj.StatusCode -eq "201" -and $WebObj.StatusDescription -eq "Created")
 {
 
 Write-Host "service_deployment.yml workflow created and uploaded successfully!" -ForegroundColor Green
+
+}
+else
+{
+
+Write-Host "Failed to upload service_deployment.yml workflow!" -ForegroundColor Red
+
+}
+
+
+# Dispatching Created POS Service Deployment Workflow
+
+$WebObj = ""
+
+$headers = @{"Accept"="application/vnd.github.v3+json"; "Authorization"="token $Token"}
+
+$payload = @{ "ref"="refs/heads/master" }
+
+$body = $payload | ConvertTo-Json
+
+$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/actions/workflows/service_deployment.yml/dispatches"
+
+$WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method POST
+
+if($WebObj.StatusCode -eq "204" -and $WebObj.StatusDescription -eq "No Content")
+{
+
+Write-Host "service_deployment.yml workflow dispatched successfully!" -ForegroundColor Green
+
+}
+else
+{
+
+Write-Host "Failed to dispatch service_deployment.yml workflow!" -ForegroundColor Red
 
 }

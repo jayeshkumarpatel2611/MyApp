@@ -10,6 +10,10 @@ param (
 
 $JSONObject = @{}
 
+Write-Host "RingInfo:"
+
+$RingInfo
+
 $JSONObject = "$($RingInfo)" | ConvertFrom-Json
 
 $ymlFilePath = "$($env:USERPROFILE)\Desktop\Service_Deployment.yml" 

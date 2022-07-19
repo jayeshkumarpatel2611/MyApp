@@ -15,7 +15,15 @@ jobs:
       - run: echo "The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - run: echo "This job's status is ${{ job.status }}."
       - name: checkout action files
-        uses: actions/checkout@v2    
+        uses: actions/checkout@v2  
+      - name: install Powershell
+        run : | 
+                sudo apt-get update
+                sudo apt-get install -y wget apt-transport-https software-properties-common
+                wget -q "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb"
+                sudo dpkg -i packages-microsoft-prod.deb
+                sudo apt-get update
+                sudo apt-get install -y powershell
       - name : Create Github WorkFlow      
         shell: pwsh
         run : |

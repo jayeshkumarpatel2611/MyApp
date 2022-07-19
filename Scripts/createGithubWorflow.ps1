@@ -182,7 +182,7 @@ $headers = @{"Accept"="application/json"; "Authorization"="bearer $Token"}
 
 $payload = @{ "ref"="refs/heads/main"; "message" = "New Service Deployment Github WorkFlow"; "content" = "$($content)"  }
 $body = $payload | ConvertTo-Json
-$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/Service_Deployment.yml"
+$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/Ring0.yml"
 
 $WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method Put
 

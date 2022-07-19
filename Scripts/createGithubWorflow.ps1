@@ -320,7 +320,7 @@ Write-Host "Failed to upload service_deployment.yml workflow!" -ForegroundColor 
 
 }
 
-
+<#
 # Dispatching Created POS Service Deployment Workflow
 
 $WebObj = ""
@@ -347,3 +347,4 @@ else
 Write-Host "Failed to dispatch service_deployment.yml workflow!" -ForegroundColor Red
 
 }
+#>

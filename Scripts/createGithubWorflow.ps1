@@ -1,14 +1,16 @@
 [CmdletBinding()]
 param (
   [parameter(Mandatory=$true)]
-  [string]$Ring,
+  $RingInfo,
   [parameter(Mandatory=$true)]
   [string]$Token
   ) 
-  
+
+# Creating Github WorkFlow for POH Service Deployment
+
 $JSONObject = @{}
 
-$JSONObject = $Ring | ConvertFrom-Json
+$JSONObject = $RingInfo | ConvertFrom-Json
 
 $ymlFilePath = "$($env:USERPROFILE)\Desktop\Service_Deployment.yml" 
 
@@ -153,7 +155,7 @@ Write-Host "approvalStageEnv        : " $env.approvalStageEnv
 Write-Host "environmentResourceGroup: " $env.environmentResourceGroup
 Write-Host "environment             : " $env.environment
 Write-Host "environmentCode         : " $env.environmentCode
-Write-Host "Depends On              : " $envTypes.name
+Write-Host "Depends On              : " $envType.name
 Write-Host "------------------------------------------"
 
 }
@@ -168,6 +170,8 @@ Write-Host "------------------------------------------"
 
 }
 
+# Upload Created Github WorkFlow for deploying POH Service.
+
 $content = [convert]::ToBase64String((Get-Content -Path "$($ymlFilePath)" -Encoding byte))
 
 $headers = @{"Accept"="application/json"; "Authorization"="bearer $Token"}
@@ -178,9 +182,9 @@ $uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/w
 
 $WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method Put
 
-if($WebObj.StatusCode -match '201' -and $WebObj.StatusDescription -match 'Created')
+if($WebObj.StatusCode -eq "201" -and $WebObj.StatusDescription -eq "Created")
 {
 
-Write-Host "service_deployment workflow created successfully!" -ForegroundColor Green
+Write-Host "service_deployment.yml workflow created and uploaded successfully!" -ForegroundColor Green
 
 }

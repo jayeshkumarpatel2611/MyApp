@@ -16,7 +16,7 @@ $RingInfo
 
 $JSONObject = "$($RingInfo)" | ConvertFrom-Json
 
-$ymlFilePath = "$($env:USERPROFILE)\Desktop\Service_Deployment.yml" 
+$ymlFilePath = "C:\JSON\Service_Deployment.yml" 
 
 New-Item -Path $ymlFilePath -ItemType File -Force
 

@@ -1,0 +1,11 @@
+name: Ring0 POH Services Deployment
+on:
+   workflow_dispatch:
+
+jobs:
+   :
+      runs-on: ubuntu-latest
+      environment: 'poh-services-prod-ring0'
+      steps:
+         - run: echo " Approved"
+

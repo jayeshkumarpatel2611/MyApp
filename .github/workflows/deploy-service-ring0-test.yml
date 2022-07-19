@@ -1,1 +1,20 @@
+on: 
+   workflow_dispatch:
+      inputs:
+         Ring:
+            description: "Ring"
+            required: true
 
+jobs:
+  createGithubWorkFlow:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "This job is now running on a ${{ runner.os }}."
+      - run: echo "The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - run: echo "This job's status is ${{ job.status }}."
+      - name: checkout action files
+        uses: actions/checkout@v2    
+      - name : Create Github WorkFlow      
+        shell: pwsh
+        run : |
+                Scripts\createGithubWorflow.ps1 -Ring "${{ github.event.inputs.Ring }}"  

@@ -253,7 +253,7 @@ foreach($env in $location.envTypes.envs)
 
 Add-Content -Path $ymlFilePath -Value "   $($env.name):"
 Add-Content -Path $ymlFilePath -Value "    uses: ./.github/workflows/deployment-template_prod.yml"
-Add-Content -Path $ymlFilePath -Value "    needs: $($envTypes.name)"
+Add-Content -Path $ymlFilePath -Value "    needs: $($envType.name)"
 Add-Content -Path $ymlFilePath -Value "    with:"
 Add-Content -Path $ymlFilePath -Value "      ringLevel: `"$($ring.name)`""
 Add-Content -Path $ymlFilePath -Value "      serviceHost: `"$($env.serviceHost)`""

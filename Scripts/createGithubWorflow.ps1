@@ -156,13 +156,6 @@ Write-Host "Depends On: " $region.displayName
 foreach($envType in $location.envTypes)
 {
 
-Add-Content -Path $ymlFilePath -Value "   $($envType.name):"
-Add-Content -Path $ymlFilePath -Value "      runs-on: ubuntu-latest"
-Add-Content -Path $ymlFilePath -Value "      needs: $($location.name)"
-Add-Content -Path $ymlFilePath -Value "      steps:"
-Add-Content -Path $ymlFilePath -Value "         - run: echo `"$($envType.name) Approved`""
-Add-Content -Path $ymlFilePath -Value ''
-
 Write-Host "envTypes: " $envType.displayName
 Write-Host "Depends On: " $location.displayName
 

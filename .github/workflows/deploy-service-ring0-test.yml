@@ -1,4 +1,4 @@
-name: Deploy Service
+name: Deploy POH Service
 
 on: 
    workflow_dispatch:

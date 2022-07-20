@@ -16,7 +16,7 @@ $RingInfo
 
 $JSONObject = "$($RingInfo)" | ConvertFrom-Json
 
-$ymlFilePath = "service_deployment.yml" 
+$ymlFilePath = "c:\users\j864364\desktop\service_deployment.yml" 
 
 New-Item -Path $ymlFilePath -ItemType File -Force
 
@@ -45,7 +45,7 @@ Write-Host "Ring: " $ring.displayName
 Write-Host "-----------------------------------------"
 
 
-foreach($region in $JSONObject.regions)
+foreach($region in $ring.regions)
 {
 
 Write-Host "region: " $region.displayName
@@ -53,7 +53,7 @@ Write-Host "Depends On: " $ring.displayName
 Write-Host "-----------------------------------------"
 
 
-foreach($location in $JSONObject.regions.locations)
+foreach($location in $region.locations)
 {
 
 Write-Host "Location: " $location.displayName
@@ -85,7 +85,7 @@ Write-Host "Ring: " $ring.displayName
 Write-Host "-----------------------------------------"
 
 
-foreach($region in $JSONObject.regions)
+foreach($region in $ring.regions)
 {
 
 Add-Content -Path $ymlFilePath -Value "   $($region.name):"
@@ -100,7 +100,7 @@ Write-Host "Depends On: " $ring.displayName
 Write-Host "-----------------------------------------"
 
 
-foreach($location in $JSONObject.regions.locations)
+foreach($location in $region.locations)
 {
 
 Write-Host "Location: " $location.displayName
@@ -132,7 +132,7 @@ Write-Host "Ring: " $ring.displayName
 Write-Host "-----------------------------------------"
 
 
-foreach($region in $JSONObject.regions)
+foreach($region in $ring.regions)
 {
 
 Write-Host "region: " $region.displayName
@@ -140,7 +140,7 @@ Write-Host "Depends On: " $ring.displayName
 Write-Host "-----------------------------------------"
 
 
-foreach($location in $JSONObject.regions.locations)
+foreach($location in $region.locations)
 {
 
 Add-Content -Path $ymlFilePath -Value "   $($location.name):"
@@ -178,7 +178,7 @@ Write-Host "Ring: " $ring.displayName
 Write-Host "-----------------------------------------"
 
 
-foreach($region in $JSONObject.regions)
+foreach($region in $ring.regions)
 {
 
 Write-Host "region: " $region.displayName
@@ -186,7 +186,7 @@ Write-Host "Depends On: " $ring.displayName
 Write-Host "-----------------------------------------"
 
 
-foreach($location in $JSONObject.regions.locations)
+foreach($location in $region.locations)
 {
 
 Write-Host "Location: " $location.displayName
@@ -220,7 +220,7 @@ Write-Host "Ring: " $ring.displayName
 Write-Host "-----------------------------------------"
 
 
-foreach($region in $JSONObject.regions)
+foreach($region in $ring.regions)
 {
 
 Write-Host "region: " $region.displayName
@@ -228,7 +228,7 @@ Write-Host "Depends On: " $ring.displayName
 Write-Host "-----------------------------------------"
 
 
-foreach($location in $JSONObject.regions.locations)
+foreach($location in $region.locations)
 {
 
 Write-Host "Location: " $location.displayName
@@ -249,8 +249,6 @@ $pos = $appDomainAccount.IndexOf("\")
 $leftPart = $appDomainAccount.Substring(0, $pos)
 $rightPart = $appDomainAccount.Substring($pos+1)
 $appDomainAccount = $leftPart + "\\" + $rightPart
-
-Write-Host "appDomainAccount: " $appDomainAccount
 
 Add-Content -Path $ymlFilePath -Value "   $($env.name):"
 Add-Content -Path $ymlFilePath -Value "    uses: ./.github/workflows/deployment-template_prod.yml"
@@ -303,6 +301,7 @@ Write-Host "------------------------------------------"
 
 }
 
+
 # Upload Created Github WorkFlow for deploying POH Service.
 
 $content = [convert]::ToBase64String((Get-Content -Path "$($ymlFilePath)" -Encoding byte))
@@ -353,3 +352,4 @@ Write-Host "Failed to dispatch service_deployment.yml workflow!" -ForegroundColo
 Write-Host "Error: $($_)" -ForegroundColor Yellow 
 
 }
+

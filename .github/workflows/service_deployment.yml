@@ -1,0 +1,149 @@
+name: Ring0 POH Services Deployment
+on:
+   workflow_dispatch:
+
+jobs:
+   Ring_0:
+      runs-on: ubuntu-latest
+      environment: 'poh-services-prod-ring0'
+      steps:
+         - run: echo "Ring_0 Approved"
+
+   US_Region:
+      runs-on: ubuntu-latest
+      needs: Ring_0
+      steps:
+         - run: echo "US_Region_Region Approved"
+
+   Europe_Region:
+      runs-on: ubuntu-latest
+      needs: Ring_0
+      steps:
+         - run: echo "Europe_Region_Region Approved"
+
+   EastUS2_Location:
+      runs-on: ubuntu-latest
+      needs: US_Region
+      steps:
+         - run: echo "EastUS2_Location_Location Approved"
+
+   CentralUS_Location:
+      runs-on: ubuntu-latest
+      needs: US_Region
+      steps:
+         - run: echo "CentralUS_Location_Location Approved"
+
+   Zurich_Location:
+      runs-on: ubuntu-latest
+      needs: Europe_Region
+      steps:
+         - run: echo "Zurich_Location_Location Approved"
+
+   Client_Development:
+      runs-on: ubuntu-latest
+      needs: EastUS2_Location
+      steps:
+         - run: echo "Client_Development Approved"
+
+   Client_Test_UAT:
+      runs-on: ubuntu-latest
+      needs: CentralUS_Location
+      steps:
+         - run: echo "Client_Test_UAT Approved"
+
+   Client_Development2:
+      runs-on: ubuntu-latest
+      needs: Zurich_Location
+      steps:
+         - run: echo "Client_Development2 Approved"
+
+   Client_Development_001:
+    uses: ./.github/workflows/deployment-template_prod.yml
+    needs: Client_Development
+    with:
+      ringLevel: "Ring_0"
+      serviceHost: "scmtechmob221.techpss.lan"
+      appDomainAccount: "techpss\\pohservices"
+      envName: "MOB221"
+      HWSServer: "SCMTECHMOB221"
+      HCServer: "SCMTECHMOB221"
+      approvalStageEnv: "poh-env-prod-eg-clientdev_eastus2"
+      POHTenantID: "fa1be5b8-5dcf-4a7c-82a1-cff11d480b0d"
+      IDNTenantID: "a72de719-719d-44f2-8b40-70d32a4b51d6"
+      POHBASEURL: "https://scmtechmob221.techpss.lan/POH/MOB221"
+      envCode: "4"
+      clientName: "Internalsupport"
+      clientEnvName: "DevOpsTest"
+      metajsonfile: "poh-services-metadata.json"
+      AppsToDeploy: "DeployAll"
+      SDRM: $False
+      isRestore: $False
+      DevopsKeyVault: "poh-0-durable-kv"
+      GlobalKeyVault: "poh-0-global-kv"
+      HCPhysicalPath: "C:\\Program Files (x86)\\Allscripts Sunrise\\Helios\\8.7\\HeliosConnect"
+      HWSPhysicalPath: "C:\\Program Files (x86)\\Allscripts Sunrise\\POH"
+      EnterpriseMangerPath: "C:\\Program Files (x86)\\Allscripts Sunrise\\Enterprise Manager"
+      VirtualConnectionPath: "HeliosConnect/87"
+    secrets:
+      AZURE_DEVOPS_PAT_TOKEN: ${{ secrets.AZURE_DEVOPS_PAT_TOKEN }}
+
+   Client_Test_001:
+    uses: ./.github/workflows/deployment-template_prod.yml
+    needs: Client_Test_UAT
+    with:
+      ringLevel: "Ring_0"
+      serviceHost: "POHSCMHC01"
+      appDomainAccount: "Corporate\\svc_pohuser"
+      envName: "scmdevops210c"
+      HWSServer: "POHSCMHWS01"
+      HCServer: "POHSCMHC01"
+      approvalStageEnv: "poh-env-prod-eg-clientdev_centralus"
+      POHTenantID: "fa1be5b8-5dcf-4a7c-82a1-cff11d480b0d"
+      IDNTenantID: "c9b60a90-e87b-4037-b8a2-e1b0c8811091"
+      POHBASEURL: "https://pohscmhws01.rd.allscripts.com/POH/scm_devops_210c"
+      envCode: "4"
+      clientName: "scmdevops210c"
+      clientEnvName: "MOB221"
+      metajsonfile: "poh-services-metadata.json"
+      AppsToDeploy: "DeployAll"
+      SDRM: $False
+      isRestore: $False
+      DevopsKeyVault: "poh-0-durable-kv"
+      GlobalKeyVault: "poh-0-global-kv"
+      HCPhysicalPath: "C:\\Program Files (x86)\\Allscripts Sunrise\\Helios\\8.7\\HeliosConnect"
+      HWSPhysicalPath: "C:\\Program Files (x86)\\Allscripts Sunrise\\POH"
+      EnterpriseMangerPath: "C:\\Program Files (x86)\\Allscripts Sunrise\\Enterprise Manager"
+      VirtualConnectionPath: "HeliosConnect/87"
+    secrets:
+      AZURE_DEVOPS_PAT_TOKEN: ${{ secrets.AZURE_DEVOPS_PAT_TOKEN }}
+
+   Client_Development_002:
+    uses: ./.github/workflows/deployment-template_prod.yml
+    needs: Client_Development2
+    with:
+      ringLevel: "Ring_0"
+      serviceHost: "scmtechmob222techpss.lan"
+      appDomainAccount: "techpss2\\pohservices"
+      envName: "MOB222"
+      HWSServer: "SCMTECHMOB222"
+      HCServer: "SCMTECHMOB222"
+      approvalStageEnv: "poh-env-prod-eg-clientdev_zurich"
+      POHTenantID: "fa1be5b8-5dcf-4a7c-82a1-cff11d480b0d"
+      IDNTenantID: "a72de719-719d-44f2-8b40-70d32a4b51d6"
+      POHBASEURL: "https://scmtechmob221.techpss.lan/POH/MOB221"
+      envCode: "4"
+      clientName: "Internalsupport2"
+      clientEnvName: "DevOpsTest2"
+      metajsonfile: "poh-services-metadata.json"
+      AppsToDeploy: "DeployAll"
+      SDRM: $False
+      isRestore: $False
+      DevopsKeyVault: "poh-0-durable-kv"
+      GlobalKeyVault: "poh-0-global-kv"
+      HCPhysicalPath: "C:\\Program Files (x86)\\Allscripts Sunrise\\Helios\\8.7\\HeliosConnect"
+      HWSPhysicalPath: "C:\\Program Files (x86)\\Allscripts Sunrise\\POH"
+      EnterpriseMangerPath: "C:\\Program Files (x86)\\Allscripts Sunrise\\Enterprise Manager"
+      VirtualConnectionPath: "HeliosConnect/87"
+    secrets:
+      AZURE_DEVOPS_PAT_TOKEN: ${{ secrets.AZURE_DEVOPS_PAT_TOKEN }}
+

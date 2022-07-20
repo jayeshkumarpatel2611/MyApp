@@ -153,14 +153,16 @@ Write-Host "-----------------------------------------"
 }
 
 Get-Content -Path $ringFilePath | Add-Content -Path $ymlFilePath
-
 Get-Content -Path $regionFilePath | Add-Content -Path $ymlFilePath
-
 Get-Content -Path $locationFilePath | Add-Content -Path $ymlFilePath
-
 Get-Content -Path $envTypesFilePath | Add-Content -Path $ymlFilePath
-
 Get-Content -Path $envsFilePath | Add-Content -Path $ymlFilePath
+
+Remove-Item $ringFilePath -
+Remove-Item $regionFilePath -Force
+Remove-Item $locationFilePath -Force
+Remove-Item $envTypesFilePath -Force
+Remove-Item $envsFilePath -Force
 
 
 # Upload Created Github WorkFlow for deploying POH Service.
@@ -178,6 +180,8 @@ try {
 $WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method Put -ErrorAction Stop
 
 Write-Host "service_deployment.yml workflow created and uploaded successfully!" -ForegroundColor Green
+
+Remove-Item $ymlFilePath -Force
 
 }
 catch {

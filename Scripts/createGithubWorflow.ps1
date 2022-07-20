@@ -16,29 +16,28 @@ $RingInfo
 
 $RingInfo = "$($RingInfo)" | ConvertFrom-Json
 
-$ymlFilePath = "service_deployment.yml" 
-$ringFilePath = "ring.yml" 
-$regionFilePath = "region.yml" 
-$locationFilePath = "location.yml" 
-$envTypesFilePath = "envType.yml" 
-$envsFilePath = "envs.yml" 
 
-New-Item -Path $ymlFilePath -ItemType File -Force
+foreach($ring in $RingInfo)
+{
+
+$ymlFilePath = $ring.name + "_Service_Deployment.yml"
+$ringFilePath = $ring.name + "_Ring.yml"
+$regionFilePath = $ring.name + "_Region.yml"
+$locationFilePath = $ring.name + "_Location.yml"
+$envTypesFilePath = $ring.name + "_envTypes.yml"
+$envsFilePath = $ring.name + "_Envs.yml"
+
 New-Item -Path $ringFilePath -ItemType File -Force
 New-Item -Path $regionFilePath -ItemType File -Force
 New-Item -Path $locationFilePath -ItemType File -Force
 New-Item -Path $envTypesFilePath -ItemType File -Force
 New-Item -Path $envsFilePath -ItemType File -Force
 
-Add-Content -Path $ymlFilePath -Value 'name: Ring0 POH Services Deployment'
-Add-Content -Path $ymlFilePath -Value 'on:'
-Add-Content -Path $ymlFilePath -Value '   workflow_dispatch:'
-Add-Content -Path $ymlFilePath -Value ''
-Add-Content -Path $ymlFilePath -Value 'jobs:'
-
-
-foreach($ring in $RingInfo)
-{
+Add-Content -Path $ymlFilePath -Value "name: $($ring.name) POH Services Deployment"
+Add-Content -Path $ymlFilePath -Value "on:"
+Add-Content -Path $ymlFilePath -Value "   workflow_dispatch:"
+Add-Content -Path $ymlFilePath -Value ""
+Add-Content -Path $ymlFilePath -Value "jobs:"
 
 Write-Host $ring.name
 
@@ -47,7 +46,7 @@ Add-Content -Path $ringFilePath -Value "      runs-on: ubuntu-latest"
 Add-Content -Path $ringFilePath -Value "      environment: 'poh-services-prod-ring0'"
 Add-Content -Path $ringFilePath -Value "      steps:"
 Add-Content -Path $ringFilePath -Value "         - run: echo `"$($ring.name) Approved`""
-Add-Content -Path $ringFilePath -Value ''
+Add-Content -Path $ringFilePath -Value ""
 
 Write-Host "Ring: " $ring.displayName
 Write-Host "-----------------------------------------"
@@ -61,7 +60,7 @@ Write-Host "-----------------------------------------"
     Add-Content -Path $regionFilePath -Value "      needs: $($ring.name)"
     Add-Content -Path $regionFilePath -Value "      steps:"
     Add-Content -Path $regionFilePath -Value "         - run: echo `"$($region.name)_Region Approved`""
-    Add-Content -Path $regionFilePath -Value ''
+    Add-Content -Path $regionFilePath -Value ""
 
     Write-Host "region: " $region.displayName
     Write-Host "Depends On: " $ring.displayName
@@ -76,7 +75,7 @@ Write-Host "-----------------------------------------"
         Add-Content -Path $locationFilePath -Value "      needs: $($region.name)"
         Add-Content -Path $locationFilePath -Value "      steps:"
         Add-Content -Path $locationFilePath -Value "         - run: echo `"$($location.name)_Location Approved`""
-        Add-Content -Path $locationFilePath -Value ''
+        Add-Content -Path $locationFilePath -Value ""
 
         Write-Host "Location: " $location.displayName
         Write-Host "Depends On: " $region.displayName
@@ -89,7 +88,7 @@ Write-Host "-----------------------------------------"
             Add-Content -Path $envTypesFilePath -Value "      needs: $($location.name)"
             Add-Content -Path $envTypesFilePath -Value "      steps:"
             Add-Content -Path $envTypesFilePath -Value "         - run: echo `"$($envType.name) Approved`""
-            Add-Content -Path $envTypesFilePath -Value ''
+            Add-Content -Path $envTypesFilePath -Value ""
 
             Write-Host "envTypes: " $envType.displayName
             Write-Host "Depends On: " $location.displayName
@@ -132,7 +131,7 @@ Write-Host "-----------------------------------------"
                 Add-Content -Path $envsFilePath -Value "      VirtualConnectionPath: `"HeliosConnect/87`""
                 Add-Content -Path $envsFilePath -Value "    secrets:"
                 Add-Content -Path $envsFilePath -Value "      AZURE_DEVOPS_PAT_TOKEN: `${{ secrets.AZURE_DEVOPS_PAT_TOKEN }}"
-                Add-Content -Path $envsFilePath -Value ''
+                Add-Content -Path $envsFilePath -Value ""
 
                 Write-Host "Environment Type        : " $env.displayName
                 Write-Host "approvalStageEnv        : " $env.approvalStageEnv
@@ -150,23 +149,22 @@ Write-Host "-----------------------------------------"
 
     }
 
-}
+    Get-Content -Path $ringFilePath | Add-Content -Path $ymlFilePath
+    Get-Content -Path $regionFilePath | Add-Content -Path $ymlFilePath
+    Get-Content -Path $locationFilePath | Add-Content -Path $ymlFilePath
+    Get-Content -Path $envTypesFilePath | Add-Content -Path $ymlFilePath
+    Get-Content -Path $envsFilePath | Add-Content -Path $ymlFilePath
 
-Get-Content -Path $ringFilePath | Add-Content -Path $ymlFilePath
-Get-Content -Path $regionFilePath | Add-Content -Path $ymlFilePath
-Get-Content -Path $locationFilePath | Add-Content -Path $ymlFilePath
-Get-Content -Path $envTypesFilePath | Add-Content -Path $ymlFilePath
-Get-Content -Path $envsFilePath | Add-Content -Path $ymlFilePath
+    Remove-Item -Path $ringFilePath -Force
+    Remove-Item -Path $regionFilePath -Force
+    Remove-Item -Path $locationFilePath -Force
+    Remove-Item -Path $envTypesFilePath -Force
+    Remove-Item -Path $envsFilePath -Force
 
-Remove-Item -Path $ringFilePath -Force
-Remove-Item -Path $regionFilePath -Force
-Remove-Item -Path $locationFilePath -Force
-Remove-Item -Path $envTypesFilePath -Force
-Remove-Item -Path $envsFilePath -Force
 
 # Get SHA for service_deployment.yml file to delete from repo
 
-$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/service_deployment.yml"
+$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/$($ymlFilePath)"
 
 try {
 
@@ -180,22 +178,22 @@ $SHA = $WebObj.sha
 
 $headers = @{"Accept"="application/json"; "Authorization"="bearer $Token"}
 
-$payload = @{ "ref"="refs/heads/master"; "message" = "Deleting Old Service Deployment Github WorkFlow to create new one"; "sha" = "$($SHA)"  }
+$payload = @{ "ref"="refs/heads/master"; "message" = "Deleting Github WorkFlow -> $($ymlFilePath) to create new one"; "sha" = "$($SHA)"  }
 
 $body = $payload | ConvertTo-Json
 
-$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/service_deployment.yml"
+$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/$($ymlFilePath)"
 
 try {
 
 $WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method Delete -ErrorAction Stop
 
-Write-Host "Old service_deployment.yml workflow is deleted successfully!" -ForegroundColor Green
+Write-Host "$($ymlFilePath) workflow is deleted successfully!" -ForegroundColor Green
 
 }
 catch {
 
-Write-Host "Failed to delete service_deployment.yml workflow!" -ForegroundColor Red
+Write-Host "Failed to delete $($ymlFilePath) workflow!" -ForegroundColor Red
 
 Write-Host "Error: $($_)" -ForegroundColor Yellow 
 
@@ -204,7 +202,7 @@ Write-Host "Error: $($_)" -ForegroundColor Yellow
 }
 catch {
 
-Write-Host "Failed to get SHA for service_deployment.yml workflow!" -ForegroundColor Red
+Write-Host "Failed to get SHA for $($ymlFilePath) workflow!" -ForegroundColor Red
 
 Write-Host "Error: $($_)" -ForegroundColor Yellow 
 
@@ -216,22 +214,22 @@ $content = [convert]::ToBase64String((Get-Content -Path "$($ymlFilePath)" -Encod
 
 $headers = @{"Accept"="application/json"; "Authorization"="bearer $Token"}
 
-$payload = @{ "ref"="refs/heads/main"; "message" = "New Service Deployment Github WorkFlow"; "content" = "$($content)"  }
+$payload = @{ "ref"="refs/heads/main"; "message" = "New POH Service Deployment Github WorkFlow - $($ymlFilePath)"; "content" = "$($content)"  }
 $body = $payload | ConvertTo-Json
-$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/service_deployment.yml"
+$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/$($ymlFilePath)"
 
 try {
 
 $WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method Put -ErrorAction Stop
 
-Write-Host "service_deployment.yml workflow created and uploaded successfully!" -ForegroundColor Green
+Write-Host "$($ymlFilePath) workflow created and uploaded successfully!" -ForegroundColor Green
 
 Remove-Item $ymlFilePath -Force
 
 }
 catch {
 
-Write-Host "Failed to upload service_deployment.yml workflow!" -ForegroundColor Red
+Write-Host "Failed to upload $($ymlFilePath) workflow!" -ForegroundColor Red
 
 Write-Host "Error: $($_)" -ForegroundColor Yellow 
 
@@ -246,19 +244,21 @@ $payload = @{ "ref"="refs/heads/master" }
 
 $body = $payload | ConvertTo-Json
 
-$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/actions/workflows/service_deployment.yml/dispatches"
+$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/actions/workflows/$($ymlFilePath)/dispatches"
 
 try {
 
 $WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method POST -ErrorAction Stop
 
-Write-Host "service_deployment.yml workflow dispatched successfully!" -ForegroundColor Green
+Write-Host "$($ymlFilePath) workflow dispatched successfully!" -ForegroundColor Green
 
 }
 catch {
 
-Write-Host "Failed to dispatch service_deployment.yml workflow!" -ForegroundColor Red
+Write-Host "Failed to dispatch $($ymlFilePath) workflow!" -ForegroundColor Red
 
 Write-Host "Error: $($_)" -ForegroundColor Yellow 
+
+}
 
 }

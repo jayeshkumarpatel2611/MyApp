@@ -315,7 +315,7 @@ $uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/w
 
 try {
 
-$WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method Put
+$WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method Put -ErrorAction Stop
 
 Write-Host "service_deployment.yml workflow created and uploaded successfully!" -ForegroundColor Green
 

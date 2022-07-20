@@ -188,12 +188,12 @@ Write-Host "-----------------------------------------"
 
     $WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method Delete -ErrorAction Stop
 
-    Write-Host "$($ymlFilePath) workflow is deleted successfully!" -ForegroundColor Green
+    Write-Host "$($ymlFilePath) old workflow is deleted successfully!" -ForegroundColor Green
 
     }
     catch {
 
-    Write-Host "Failed to delete $($ymlFilePath) workflow!" -ForegroundColor Red
+    Write-Host "Failed to delete $($ymlFilePath) old workflow!" -ForegroundColor Red
 
     Write-Host "Error: $($_)" -ForegroundColor Yellow 
 

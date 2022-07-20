@@ -162,103 +162,102 @@ Write-Host "-----------------------------------------"
     Remove-Item -Path $envsFilePath -Force
 
 
-# Get SHA for service_deployment.yml file to delete from repo
+    # Get SHA for service_deployment.yml file to delete from repo
 
-$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/$($ymlFilePath)"
+    $uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/$($ymlFilePath)"
 
-try {
+    try {
 
-$WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -Method Get -ErrorAction Stop
+    $WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -Method Get -ErrorAction Stop
 
-$WebObj = $WebObj.Content | ConvertFrom-Json
+    $WebObj = $WebObj.Content | ConvertFrom-Json
 
-$SHA = $WebObj.sha
+    $SHA = $WebObj.sha
 
-# Delete Old Service Deployment Github WorkFlow
+    # Delete Old Service Deployment Github WorkFlow
 
-$headers = @{"Accept"="application/json"; "Authorization"="bearer $Token"}
+    $headers = @{"Accept"="application/json"; "Authorization"="bearer $Token"}
 
-$payload = @{ "ref"="refs/heads/master"; "message" = "Deleting Github WorkFlow -> $($ymlFilePath) to create new one"; "sha" = "$($SHA)"  }
+    $payload = @{ "ref"="refs/heads/master"; "message" = "Deleting Github WorkFlow -> $($ymlFilePath) to create new one"; "sha" = "$($SHA)"  }
 
-$body = $payload | ConvertTo-Json
+    $body = $payload | ConvertTo-Json
 
-$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/$($ymlFilePath)"
+    $uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/$($ymlFilePath)"
 
-try {
+    try {
 
-$WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method Delete -ErrorAction Stop
+    $WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method Delete -ErrorAction Stop
 
-Write-Host "$($ymlFilePath) workflow is deleted successfully!" -ForegroundColor Green
+    Write-Host "$($ymlFilePath) workflow is deleted successfully!" -ForegroundColor Green
 
-}
-catch {
+    }
+    catch {
 
-Write-Host "Failed to delete $($ymlFilePath) workflow!" -ForegroundColor Red
+    Write-Host "Failed to delete $($ymlFilePath) workflow!" -ForegroundColor Red
 
-Write-Host "Error: $($_)" -ForegroundColor Yellow 
+    Write-Host "Error: $($_)" -ForegroundColor Yellow 
 
-}
+    }
 
-}
-catch {
+    }
+    catch {
 
-Write-Host "Failed to get SHA for $($ymlFilePath) workflow!" -ForegroundColor Red
+    Write-Host "Failed to get SHA for $($ymlFilePath) workflow!" -ForegroundColor Red
 
-Write-Host "Error: $($_)" -ForegroundColor Yellow 
+    Write-Host "Error: $($_)" -ForegroundColor Yellow 
 
-}
+    }
 
-# Upload Created Github WorkFlow for deploying POH Service.
+    # Upload Created Github WorkFlow for deploying POH Service.
 
-$content = [convert]::ToBase64String((Get-Content -Path "$($ymlFilePath)" -Encoding byte))
+    try {
 
-$headers = @{"Accept"="application/json"; "Authorization"="bearer $Token"}
+    $content = [convert]::ToBase64String((Get-Content -Path "$($ymlFilePath)" -Encoding byte))
+    $headers = @{"Accept"="application/json"; "Authorization"="bearer $Token"}
+    $payload = @{ "ref"="refs/heads/main"; "message" = "New POH Service Deployment Github WorkFlow - $($ymlFilePath)"; "content" = "$($content)"  }
+    $body = $payload | ConvertTo-Json
+    $uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/$($ymlFilePath)"
+    
+    $WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method Put -ErrorAction Stop
 
-$payload = @{ "ref"="refs/heads/main"; "message" = "New POH Service Deployment Github WorkFlow - $($ymlFilePath)"; "content" = "$($content)"  }
-$body = $payload | ConvertTo-Json
-$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/$($ymlFilePath)"
+    Write-Host "$($ymlFilePath) workflow created and uploaded successfully!" -ForegroundColor Green
 
-try {
+    Remove-Item -Path $ymlFilePath -Force
 
-$WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method Put -ErrorAction Stop
+    
+    # Dispatching Created POS Service Deployment Workflow
 
-Write-Host "$($ymlFilePath) workflow created and uploaded successfully!" -ForegroundColor Green
+    $headers = @{"Accept"="application/json"; "Authorization"="bearer $Token"}
 
-Remove-Item $ymlFilePath -Force
+    $payload = @{ "ref"="refs/heads/master" }
 
-}
-catch {
+    $body = $payload | ConvertTo-Json
 
-Write-Host "Failed to upload $($ymlFilePath) workflow!" -ForegroundColor Red
+    $uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/actions/workflows/$($ymlFilePath)/dispatches"
 
-Write-Host "Error: $($_)" -ForegroundColor Yellow 
+    try {
 
-}
+    $WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method POST -ErrorAction Stop
 
+    Write-Host "$($ymlFilePath) workflow dispatched successfully!" -ForegroundColor Green
 
-# Dispatching Created POS Service Deployment Workflow
+    }
+    catch {
 
-$headers = @{"Accept"="application/json"; "Authorization"="bearer $Token"}
+    Write-Host "Failed to dispatch $($ymlFilePath) workflow!" -ForegroundColor Red
 
-$payload = @{ "ref"="refs/heads/master" }
+    Write-Host "Error: $($_)" -ForegroundColor Yellow 
 
-$body = $payload | ConvertTo-Json
+    }
 
-$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/actions/workflows/$($ymlFilePath)/dispatches"
+    }
+    catch {
 
-try {
+    Write-Host "Failed to upload $($ymlFilePath) workflow!" -ForegroundColor Red
 
-$WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method POST -ErrorAction Stop
+    Write-Host "Error: $($_)" -ForegroundColor Yellow 
 
-Write-Host "$($ymlFilePath) workflow dispatched successfully!" -ForegroundColor Green
+    }
 
-}
-catch {
-
-Write-Host "Failed to dispatch $($ymlFilePath) workflow!" -ForegroundColor Red
-
-Write-Host "Error: $($_)" -ForegroundColor Yellow 
-
-}
 
 }

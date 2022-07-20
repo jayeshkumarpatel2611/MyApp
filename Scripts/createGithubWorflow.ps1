@@ -164,6 +164,51 @@ Remove-Item -Path $locationFilePath -Force
 Remove-Item -Path $envTypesFilePath -Force
 Remove-Item -Path $envsFilePath -Force
 
+# Get SHA for service_deployment.yml file to delete from repo
+
+$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/service_deployment.yml"
+
+try {
+
+$WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -Method Get -ErrorAction Stop
+
+$WebObj = $WebObj.Content | ConvertFrom-Json
+
+$SHA = $WebObj.sha
+
+# Delete Old Service Deployment Github WorkFlow
+
+$headers = @{"Accept"="application/json"; "Authorization"="bearer $Token"}
+
+$payload = @{ "ref"="refs/heads/master"; "message" = "Deleting Old Service Deployment Github WorkFlow to create new one"; "sha" = "$($SHA)"  }
+
+$body = $payload | ConvertTo-Json
+
+$uri="https://api.github.com/repos/jayeshkumarpatel2611/MyApp/contents/.github/workflows/service_deployment.yml"
+
+try {
+
+$WebObj = Invoke-WebRequest -Uri $uri -Headers $headers -UseBasicParsing -Body $body -Method Delete -ErrorAction Stop
+
+Write-Host "Old service_deployment.yml workflow is deleted successfully!" -ForegroundColor Green
+
+}
+catch {
+
+Write-Host "Failed to delete service_deployment.yml workflow!" -ForegroundColor Red
+
+Write-Host "Error: $($_)" -ForegroundColor Yellow 
+
+}
+
+}
+catch {
+
+Write-Host "Failed to get SHA for service_deployment.yml workflow!" -ForegroundColor Red
+
+Write-Host "Error: $($_)" -ForegroundColor Yellow 
+
+}
 
 # Upload Created Github WorkFlow for deploying POH Service.
 

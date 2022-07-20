@@ -8,8 +8,6 @@ param (
 
 # Creating Github WorkFlow for POH Service Deployment
 
-$JSONObject = @{}
-
 Write-Host "RingInfo:"
 
 $RingInfo

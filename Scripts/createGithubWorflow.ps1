@@ -8,12 +8,7 @@ param (
 
 # Creating Github WorkFlow for POH Service Deployment
 
-Write-Host "RingInfo:"
-
-$RingInfo
-
 $RingInfo = "$($RingInfo)" | ConvertFrom-Json
-
 
 foreach($ring in $RingInfo)
 {

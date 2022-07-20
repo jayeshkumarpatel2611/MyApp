@@ -14,11 +14,21 @@ Write-Host "RingInfo:"
 
 $RingInfo
 
-$JSONObject = "$($RingInfo)" | ConvertFrom-Json
+$RingInfo = "$($RingInfo)" | ConvertFrom-Json
 
-$ymlFilePath = "c:\users\j864364\desktop\service_deployment.yml" 
+$ymlFilePath = "service_deployment.yml" 
+$ringFilePath = "ring.yml" 
+$regionFilePath = "region.yml" 
+$locationFilePath = "location.yml" 
+$envTypesFilePath = "envType.yml" 
+$envsFilePath = "envs.yml" 
 
 New-Item -Path $ymlFilePath -ItemType File -Force
+New-Item -Path $ringFilePath -ItemType File -Force
+New-Item -Path $regionFilePath -ItemType File -Force
+New-Item -Path $locationFilePath -ItemType File -Force
+New-Item -Path $envTypesFilePath -ItemType File -Force
+New-Item -Path $envsFilePath -ItemType File -Force
 
 Add-Content -Path $ymlFilePath -Value 'name: Ring0 POH Services Deployment'
 Add-Content -Path $ymlFilePath -Value 'on:'
@@ -27,279 +37,130 @@ Add-Content -Path $ymlFilePath -Value ''
 Add-Content -Path $ymlFilePath -Value 'jobs:'
 
 
-# Ring
-
-foreach($ring in $JSONObject)
+foreach($ring in $RingInfo)
 {
 
 Write-Host $ring.name
 
-Add-Content -Path $ymlFilePath -Value "   $($ring.name):"
-Add-Content -Path $ymlFilePath -Value "      runs-on: ubuntu-latest"
-Add-Content -Path $ymlFilePath -Value "      environment: 'poh-services-prod-ring0'"
-Add-Content -Path $ymlFilePath -Value "      steps:"
-Add-Content -Path $ymlFilePath -Value "         - run: echo `"$($ring.name) Approved`""
-Add-Content -Path $ymlFilePath -Value ''
+Add-Content -Path $ringFilePath -Value "   $($ring.name):"
+Add-Content -Path $ringFilePath -Value "      runs-on: ubuntu-latest"
+Add-Content -Path $ringFilePath -Value "      environment: 'poh-services-prod-ring0'"
+Add-Content -Path $ringFilePath -Value "      steps:"
+Add-Content -Path $ringFilePath -Value "         - run: echo `"$($ring.name) Approved`""
+Add-Content -Path $ringFilePath -Value ''
 
 Write-Host "Ring: " $ring.displayName
 Write-Host "-----------------------------------------"
 
 
-foreach($region in $ring.regions)
-{
+    foreach($region in $ring.regions)
+    {
 
-Write-Host "region: " $region.displayName
-Write-Host "Depends On: " $ring.displayName
-Write-Host "-----------------------------------------"
+    Add-Content -Path $regionFilePath -Value "   $($region.name):"
+    Add-Content -Path $regionFilePath -Value "      runs-on: ubuntu-latest"
+    Add-Content -Path $regionFilePath -Value "      needs: $($ring.name)"
+    Add-Content -Path $regionFilePath -Value "      steps:"
+    Add-Content -Path $regionFilePath -Value "         - run: echo `"$($region.name)_Region Approved`""
+    Add-Content -Path $regionFilePath -Value ''
 
-
-foreach($location in $region.locations)
-{
-
-Write-Host "Location: " $location.displayName
-Write-Host "Depends On: " $region.displayName
-
-foreach($envType in $location.envTypes)
-{
-
-Write-Host "envTypes: " $envType.displayName
-Write-Host "Depends On: " $location.displayName
-
-}
-
-}
-
-}
-
-}
+    Write-Host "region: " $region.displayName
+    Write-Host "Depends On: " $ring.displayName
+    Write-Host "-----------------------------------------"
 
 
-# Regions
+        foreach($location in $region.locations)
+        {
 
-foreach($ring in $JSONObject)
-{
+        Add-Content -Path $locationFilePath -Value "   $($location.name):"
+        Add-Content -Path $locationFilePath -Value "      runs-on: ubuntu-latest"
+        Add-Content -Path $locationFilePath -Value "      needs: $($region.name)"
+        Add-Content -Path $locationFilePath -Value "      steps:"
+        Add-Content -Path $locationFilePath -Value "         - run: echo `"$($location.name)_Location Approved`""
+        Add-Content -Path $locationFilePath -Value ''
 
-Write-Host $ring.name
+        Write-Host "Location: " $location.displayName
+        Write-Host "Depends On: " $region.displayName
 
-Write-Host "Ring: " $ring.displayName
-Write-Host "-----------------------------------------"
+            foreach($envType in $location.envTypes)
+            {
 
+            Add-Content -Path $envTypesFilePath -Value "   $($envType.name):"
+            Add-Content -Path $envTypesFilePath -Value "      runs-on: ubuntu-latest"
+            Add-Content -Path $envTypesFilePath -Value "      needs: $($location.name)"
+            Add-Content -Path $envTypesFilePath -Value "      steps:"
+            Add-Content -Path $envTypesFilePath -Value "         - run: echo `"$($envType.name) Approved`""
+            Add-Content -Path $envTypesFilePath -Value ''
 
-foreach($region in $ring.regions)
-{
+            Write-Host "envTypes: " $envType.displayName
+            Write-Host "Depends On: " $location.displayName
 
-Add-Content -Path $ymlFilePath -Value "   $($region.name):"
-Add-Content -Path $ymlFilePath -Value "      runs-on: ubuntu-latest"
-Add-Content -Path $ymlFilePath -Value "      needs: $($ring.name)"
-Add-Content -Path $ymlFilePath -Value "      steps:"
-Add-Content -Path $ymlFilePath -Value "         - run: echo `"$($region.name)_Region Approved`""
-Add-Content -Path $ymlFilePath -Value ''
+                foreach($env in $envType.envs)
+                {
 
-Write-Host "region: " $region.displayName
-Write-Host "Depends On: " $ring.displayName
-Write-Host "-----------------------------------------"
+                $appDomainAccount = $env.appDomainAccount
+                $pos = $appDomainAccount.IndexOf("\")
+                $leftPart = $appDomainAccount.Substring(0, $pos)
+                $rightPart = $appDomainAccount.Substring($pos+1)
+                $appDomainAccount = $leftPart + "\\" + $rightPart
 
+                Add-Content -Path $envsFilePath -Value "   $($env.name):"
+                Add-Content -Path $envsFilePath -Value "    uses: ./.github/workflows/deployment-template_prod.yml"
+                Add-Content -Path $envsFilePath -Value "    needs: $($envType.name)"
+                Add-Content -Path $envsFilePath -Value "    with:"
+                Add-Content -Path $envsFilePath -Value "      ringLevel: `"$($ring.name)`""
+                Add-Content -Path $envsFilePath -Value "      serviceHost: `"$($env.serviceHost)`""
+                Add-Content -Path $envsFilePath -Value "      appDomainAccount: `"$($appDomainAccount)`""
+                Add-Content -Path $envsFilePath -Value "      envName: `"$($env.envName)`""
+                Add-Content -Path $envsFilePath -Value "      HWSServer: `"$($env.HWSServer)`""
+                Add-Content -Path $envsFilePath -Value "      HCServer: `"$($env.HCServer)`""
+                Add-Content -Path $envsFilePath -Value "      approvalStageEnv: `"$($env.approvalStageEnv)`""
+                Add-Content -Path $envsFilePath -Value "      POHTenantID: `"$($env.POHTenantID)`""
+                Add-Content -Path $envsFilePath -Value "      IDNTenantID: `"$($env.IDNTenantID)`""
+                Add-Content -Path $envsFilePath -Value "      POHBASEURL: `"$($env.POHBASEURL)`""
+                Add-Content -Path $envsFilePath -Value "      envCode: `"$($env.environmentCode)`""
+                Add-Content -Path $envsFilePath -Value "      clientName: `"$($env.clientName)`""
+                Add-Content -Path $envsFilePath -Value "      clientEnvName: `"$($env.environment)`""
+                Add-Content -Path $envsFilePath -Value "      metajsonfile: `"poh-services-metadata.json`""
+                Add-Content -Path $envsFilePath -Value "      AppsToDeploy: `"DeployAll`""
+                Add-Content -Path $envsFilePath -Value "      SDRM: `$False"
+                Add-Content -Path $envsFilePath -Value "      isRestore: `$False"
+                Add-Content -Path $envsFilePath -Value "      DevopsKeyVault: `"poh-0-durable-kv`""
+                Add-Content -Path $envsFilePath -Value "      GlobalKeyVault: `"poh-0-global-kv`""
+                Add-Content -Path $envsFilePath -Value "      HCPhysicalPath: `"C:\\Program Files (x86)\\Allscripts Sunrise\\Helios\\8.7\\HeliosConnect`""
+                Add-Content -Path $envsFilePath -Value "      HWSPhysicalPath: `"C:\\Program Files (x86)\\Allscripts Sunrise\\POH`""
+                Add-Content -Path $envsFilePath -Value "      EnterpriseMangerPath: `"C:\\Program Files (x86)\\Allscripts Sunrise\\Enterprise Manager`""
+                Add-Content -Path $envsFilePath -Value "      VirtualConnectionPath: `"HeliosConnect/87`""
+                Add-Content -Path $envsFilePath -Value "    secrets:"
+                Add-Content -Path $envsFilePath -Value "      AZURE_DEVOPS_PAT_TOKEN: `${{ secrets.AZURE_DEVOPS_PAT_TOKEN }}"
+                Add-Content -Path $envsFilePath -Value ''
 
-foreach($location in $region.locations)
-{
+                Write-Host "Environment Type        : " $env.displayName
+                Write-Host "approvalStageEnv        : " $env.approvalStageEnv
+                Write-Host "environmentResourceGroup: " $env.environmentResourceGroup
+                Write-Host "environment             : " $env.environment
+                Write-Host "environmentCode         : " $env.environmentCode
+                Write-Host "Depends On              : " $envType.name
+                Write-Host "------------------------------------------"
 
-Write-Host "Location: " $location.displayName
-Write-Host "Depends On: " $region.displayName
+                }
 
-foreach($envType in $location.envTypes)
-{
+            }
 
-Write-Host "envTypes: " $envType.displayName
-Write-Host "Depends On: " $location.displayName
+        }
 
-}
-
-}
-
-}
-
-}
-
-
-# Locations
-
-foreach($ring in $JSONObject)
-{
-
-Write-Host $ring.name
-
-Write-Host "Ring: " $ring.displayName
-Write-Host "-----------------------------------------"
-
-
-foreach($region in $ring.regions)
-{
-
-Write-Host "region: " $region.displayName
-Write-Host "Depends On: " $ring.displayName
-Write-Host "-----------------------------------------"
-
-
-foreach($location in $region.locations)
-{
-
-Add-Content -Path $ymlFilePath -Value "   $($location.name):"
-Add-Content -Path $ymlFilePath -Value "      runs-on: ubuntu-latest"
-Add-Content -Path $ymlFilePath -Value "      needs: $($region.name)"
-Add-Content -Path $ymlFilePath -Value "      steps:"
-Add-Content -Path $ymlFilePath -Value "         - run: echo `"$($location.name)_Location Approved`""
-Add-Content -Path $ymlFilePath -Value ''
-
-Write-Host "Location: " $location.displayName
-Write-Host "Depends On: " $region.displayName
-
-foreach($envType in $location.envTypes)
-{
-
-Write-Host "envTypes: " $envType.displayName
-Write-Host "Depends On: " $location.displayName
+    }
 
 }
 
-}
+Get-Content -Path $ringFilePath | Add-Content -Path $ymlFilePath
 
-}
+Get-Content -Path $regionFilePath | Add-Content -Path $ymlFilePath
 
-}
+Get-Content -Path $locationFilePath | Add-Content -Path $ymlFilePath
 
-# Environment Types
+Get-Content -Path $envTypesFilePath | Add-Content -Path $ymlFilePath
 
-foreach($ring in $JSONObject)
-{
-
-Write-Host $ring.name
-
-Write-Host "Ring: " $ring.displayName
-Write-Host "-----------------------------------------"
-
-
-foreach($region in $ring.regions)
-{
-
-Write-Host "region: " $region.displayName
-Write-Host "Depends On: " $ring.displayName
-Write-Host "-----------------------------------------"
-
-
-foreach($location in $region.locations)
-{
-
-Write-Host "Location: " $location.displayName
-Write-Host "Depends On: " $region.displayName
-
-foreach($envType in $location.envTypes)
-{
-
-Add-Content -Path $ymlFilePath -Value "   $($envType.name):"
-Add-Content -Path $ymlFilePath -Value "      runs-on: ubuntu-latest"
-Add-Content -Path $ymlFilePath -Value "      needs: $($location.name)"
-Add-Content -Path $ymlFilePath -Value "      steps:"
-Add-Content -Path $ymlFilePath -Value "         - run: echo `"$($envType.name) Approved`""
-Add-Content -Path $ymlFilePath -Value ''
-
-Write-Host "envTypes: " $envType.displayName
-Write-Host "Depends On: " $location.displayName
-
-}
-
-}
-
-}
-
-}
-
-foreach($ring in $JSONObject)
-{
-
-Write-Host "Ring: " $ring.displayName
-Write-Host "-----------------------------------------"
-
-
-foreach($region in $ring.regions)
-{
-
-Write-Host "region: " $region.displayName
-Write-Host "Depends On: " $ring.displayName
-Write-Host "-----------------------------------------"
-
-
-foreach($location in $region.locations)
-{
-
-Write-Host "Location: " $location.displayName
-Write-Host "Depends On: " $region.displayName
-
-foreach($envType in $location.envTypes)
-{
-
-Write-Host "envType: " $envType.displayName
-Write-Host "Depends On: " $location.displayName
-
-
-foreach($env in $location.envTypes.envs)
-{
-
-$appDomainAccount = $env.appDomainAccount
-$pos = $appDomainAccount.IndexOf("\")
-$leftPart = $appDomainAccount.Substring(0, $pos)
-$rightPart = $appDomainAccount.Substring($pos+1)
-$appDomainAccount = $leftPart + "\\" + $rightPart
-
-Add-Content -Path $ymlFilePath -Value "   $($env.name):"
-Add-Content -Path $ymlFilePath -Value "    uses: ./.github/workflows/deployment-template_prod.yml"
-Add-Content -Path $ymlFilePath -Value "    needs: $($envType.name)"
-Add-Content -Path $ymlFilePath -Value "    with:"
-Add-Content -Path $ymlFilePath -Value "      ringLevel: `"$($ring.name)`""
-Add-Content -Path $ymlFilePath -Value "      serviceHost: `"$($env.serviceHost)`""
-Add-Content -Path $ymlFilePath -Value "      appDomainAccount: `"$($appDomainAccount)`""
-Add-Content -Path $ymlFilePath -Value "      envName: `"$($env.envName)`""
-Add-Content -Path $ymlFilePath -Value "      HWSServer: `"$($env.HWSServer)`""
-Add-Content -Path $ymlFilePath -Value "      HCServer: `"$($env.HCServer)`""
-Add-Content -Path $ymlFilePath -Value "      approvalStageEnv: `"$($env.approvalStageEnv)`""
-Add-Content -Path $ymlFilePath -Value "      POHTenantID: `"$($env.POHTenantID)`""
-Add-Content -Path $ymlFilePath -Value "      IDNTenantID: `"$($env.IDNTenantID)`""
-Add-Content -Path $ymlFilePath -Value "      POHBASEURL: `"$($env.POHBASEURL)`""
-Add-Content -Path $ymlFilePath -Value "      envCode: `"$($env.environmentCode)`""
-Add-Content -Path $ymlFilePath -Value "      clientName: `"$($env.clientName)`""
-Add-Content -Path $ymlFilePath -Value "      clientEnvName: `"$($env.environment)`""
-Add-Content -Path $ymlFilePath -Value "      metajsonfile: `"poh-services-metadata.json`""
-Add-Content -Path $ymlFilePath -Value "      AppsToDeploy: `"DeployAll`""
-Add-Content -Path $ymlFilePath -Value "      SDRM: `$False"
-Add-Content -Path $ymlFilePath -Value "      isRestore: `$False"
-Add-Content -Path $ymlFilePath -Value "      DevopsKeyVault: `"poh-0-durable-kv`""
-Add-Content -Path $ymlFilePath -Value "      GlobalKeyVault: `"poh-0-global-kv`""
-Add-Content -Path $ymlFilePath -Value "      HCPhysicalPath: `"C:\\Program Files (x86)\\Allscripts Sunrise\\Helios\\8.7\\HeliosConnect`""
-Add-Content -Path $ymlFilePath -Value "      HWSPhysicalPath: `"C:\\Program Files (x86)\\Allscripts Sunrise\\POH`""
-Add-Content -Path $ymlFilePath -Value "      EnterpriseMangerPath: `"C:\\Program Files (x86)\\Allscripts Sunrise\\Enterprise Manager`""
-Add-Content -Path $ymlFilePath -Value "      VirtualConnectionPath: `"HeliosConnect/87`""
-Add-Content -Path $ymlFilePath -Value "    secrets:"
-Add-Content -Path $ymlFilePath -Value "      AZURE_DEVOPS_PAT_TOKEN: `${{ secrets.AZURE_DEVOPS_PAT_TOKEN }}"
-Add-Content -Path $ymlFilePath -Value ''
-
-Write-Host "Environment Type        : " $env.displayName
-Write-Host "approvalStageEnv        : " $env.approvalStageEnv
-Write-Host "environmentResourceGroup: " $env.environmentResourceGroup
-Write-Host "environment             : " $env.environment
-Write-Host "environmentCode         : " $env.environmentCode
-Write-Host "Depends On              : " $envType.name
-Write-Host "------------------------------------------"
-
-}
-
-
-}
-
-}
-
-}
-
-
-}
+Get-Content -Path $envsFilePath | Add-Content -Path $ymlFilePath
 
 
 # Upload Created Github WorkFlow for deploying POH Service.
@@ -352,4 +213,3 @@ Write-Host "Failed to dispatch service_deployment.yml workflow!" -ForegroundColo
 Write-Host "Error: $($_)" -ForegroundColor Yellow 
 
 }
-

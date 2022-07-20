@@ -158,11 +158,11 @@ Get-Content -Path $locationFilePath | Add-Content -Path $ymlFilePath
 Get-Content -Path $envTypesFilePath | Add-Content -Path $ymlFilePath
 Get-Content -Path $envsFilePath | Add-Content -Path $ymlFilePath
 
-Remove-Item $ringFilePath -
-Remove-Item $regionFilePath -Force
-Remove-Item $locationFilePath -Force
-Remove-Item $envTypesFilePath -Force
-Remove-Item $envsFilePath -Force
+Remove-Item -Path $ringFilePath -Force
+Remove-Item -Path $regionFilePath -Force
+Remove-Item -Path $locationFilePath -Force
+Remove-Item -Path $envTypesFilePath -Force
+Remove-Item -Path $envsFilePath -Force
 
 
 # Upload Created Github WorkFlow for deploying POH Service.

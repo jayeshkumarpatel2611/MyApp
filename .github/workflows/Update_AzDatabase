@@ -1,0 +1,82 @@
+name: Deploy Service
+on: 
+   workflow_dispatch:
+
+jobs:
+  ReadJSON:
+    name: "Reading JSON Object"
+    runs-on: ubuntu-latest
+    outputs:
+      service-deployment-ring: ${{ steps.export-service-deployment-matrix.outputs.service-deployment-ring }}
+      service-deployment-regions: ${{ steps.export-service-deployment-matrix.outputs.service-deployment-regions }}
+      service-deployment-locations: ${{ steps.export-service-deployment-matrix.outputs.service-deployment-locations }}
+      service-deployment-envTypes: ${{ steps.export-service-deployment-matrix.outputs.service-deployment-envTypes }}
+      service-deployment-env: ${{ steps.export-service-deployment-matrix.outputs.service-deployment-env }}
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Export deployment matrix
+      id: export-service-deployment-matrix
+      run: |
+        Ring="$(cat ./service-deployment-matrix.json)"
+        Regions="$(cat ./service-deployment-matrix.json | jq '.regions[]' )"
+        Locations="$(cat ./service-deployment-matrix.json | jq '.regions[]' | jq '.locations[]' )"
+        EnvTypes="$(cat ./service-deployment-matrix.json | jq '.regions[]' | jq '.locations[]' | jq '.envTypes[]' )"
+        Env="$(cat ./service-deployment-matrix.json | jq '.regions[]' | jq '.locations[]' | jq '.envTypes[]' | jq '.envs[]' )"
+
+        echo "::set-output name=service-deployment-ring::${Ring}"
+        echo "::set-output name=service-deployment-regions::${Regions}"
+        echo "::set-output name=service-deployment-locations::${Locations}"
+        echo "::set-output name=service-deployment-envTypes::${EnvTypes}"
+        echo "::set-output name=service-deployment-env::${Env}"
+
+  Ring:
+    name: "${{ matrix.ring.displayName }}"
+    runs-on: ubuntu-latest
+    needs: [ReadJSON]
+    strategy:
+      matrix:
+        ring: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-ring) }}
+    steps:
+    - run: echo "${{ matrix.ring.displayName }} Approved"
+
+  Region:
+    name: "${{ matrix.region.displayName }}"
+    runs-on: ubuntu-latest
+    needs: [ReadJSON,Ring]
+    strategy:
+      matrix:
+        region: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-regions) }}
+    steps:
+    - run: echo "${{ matrix.region.displayName }} Approved" 
+    
+  Location:
+    name: "${{ matrix.location.displayName }}"
+    runs-on: ubuntu-latest
+    needs: [ReadJSON,Region]
+    strategy:
+      matrix:
+        location: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-locations) }}
+    steps:
+    - run: echo "${{ matrix.location.displayName }} Approved"    
+  
+  EnvironmentType:
+    name: "${{ matrix.envType.displayName }}"
+    runs-on: ubuntu-latest
+    needs: [ReadJSON,Location]
+    strategy:
+      matrix:
+        envType: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-envTypes) }}
+    steps:
+    - run: echo "${{ matrix.envType.displayName }} Approved"        
+
+  Environment:
+    name: "${{ matrix.env.displayName }}"
+    runs-on: ubuntu-latest
+    needs: [ReadJSON,EnvironmentType]
+    strategy:
+      matrix:
+        env: ${{ fromJSON(needs.ReadJSON.outputs.service-deployment-env) }}
+    steps:
+    - run: echo "${{ matrix.env.displayName }} Approved"
+ 

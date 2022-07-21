@@ -48,7 +48,9 @@ jobs:
           subscription-id: 2daf7420-f7f4-4e0f-8a65-8dd8f147545b
           enable-AzPSSession: true
         
-      - name : Update POH Service Deployment Status on Azure SQL Database     
+      - name : Update POH Service Deployment Status on Azure SQL Database 
+        env: 
+          credentials: ${{ secrets.AZURE_CREDENTIALS }}
         shell: pwsh
         run: |
               [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12

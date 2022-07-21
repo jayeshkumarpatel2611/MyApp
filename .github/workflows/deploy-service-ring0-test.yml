@@ -44,7 +44,7 @@ jobs:
         shell: pwsh
         run: |
               [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-              Install-Module -Name SqlServer -Scope AllUsers -AllowClobber -Force -ErrorAction Stop -Confirm:$false  
+              Install-Module -Name SqlServer -Scope CurrentUser -AllowClobber -Force -ErrorAction Stop -Confirm:$false  
               $ServerInstance = "myentdb.database.windows.net"
               $Database = "mydatabase"
               Write-Host "---------------------------------------------------------------------------------------"

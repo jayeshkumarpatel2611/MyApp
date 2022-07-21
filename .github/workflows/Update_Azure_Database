@@ -6,38 +6,47 @@ on:
 jobs:
 
  Job1:
-  steps:
-    - name : Job1
-      shell: pwsh          
-      run: | 
+   name: Job1
+   runs-on: ubuntu-latest
+   steps:
+     - name : Job1
+       shell: pwsh          
+       run: | 
              write-host "Job1 Completed"
         
-  Job2:
-    steps:
-    - name : Job2
-      shell: pwsh          
-      run: | 
-             write-host "Job2 Completed"   
 
-  Job3:
-    steps:
-    - name : Job3
-      shell: pwsh          
-      run: | 
-             write-host "Job3 Completed"
+ Job2:
+   name: Job2
+   runs-on: ubuntu-latest
+   steps:
+     - name : Job2
+       shell: pwsh          
+       run: | 
+             write-host "Job1 Completed" 
+
+
+ Job3:
+   name: Job3
+   runs-on: ubuntu-latest
+   steps:
+     - name : Job3
+       shell: pwsh          
+       run: | 
+             write-host "Job1 Completed"
         
   UpdateAzureSQLDatabase:
-   steps:
-    - name: Azure Login
-      uses: Azure/login@v1.4.3
-      with:
-        client-id: 729d79cd-2441-41cc-9f1d-805601836f14
-        tenant-id: ab8614a3-38fa-4410-81cc-2cff09afdee1
-        subscription-id: 2daf7420-f7f4-4e0f-8a65-8dd8f147545b
-        enable-AzPSSession: true
-    - name: Updating Github Pipeline Status to Azure SQL Database
-      shell: pwsh
-      run: |
+    name: Update Azure SQL Database
+    steps:
+     - name: Azure Login
+       uses: Azure/login@v1.4.3
+       with:
+         client-id: 729d79cd-2441-41cc-9f1d-805601836f14
+         tenant-id: ab8614a3-38fa-4410-81cc-2cff09afdee1
+         subscription-id: 2daf7420-f7f4-4e0f-8a65-8dd8f147545b
+         enable-AzPSSession: true
+     - name: Updating Github Pipeline Status to Azure SQL Database
+       shell: pwsh
+       run: |
             $ServerInstance = "myentdb.database.windows.net"
             $Database = "mydatabase"
             Write-Host "---------------------------------------------------------------------------------------"

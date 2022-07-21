@@ -40,6 +40,14 @@ jobs:
     steps:
       - name: checkout action files
         uses: actions/checkout@v2 
+      - name: Azure Login
+        uses: Azure/login@v1.4.3
+        with:
+          client-id: 729d79cd-2441-41cc-9f1d-805601836f14
+          tenant-id: ab8614a3-38fa-4410-81cc-2cff09afdee1
+          subscription-id: 2daf7420-f7f4-4e0f-8a65-8dd8f147545b
+          enable-AzPSSession: true
+        
       - name : Update POH Service Deployment Status on Azure SQL Database     
         shell: pwsh
         run: |

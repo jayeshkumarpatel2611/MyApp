@@ -12,14 +12,14 @@ jobs:
              write-host "Job1 Completed"
         
    Job2:
-   steps:
+    steps:
     - name : Job2
       shell: pwsh          
       run: | 
              write-host "Job2 Completed"   
 
    Job3:
-   steps:
+    steps:
     - name : Job3
       shell: pwsh          
       run: | 

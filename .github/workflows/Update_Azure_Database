@@ -1,24 +1,25 @@
+
 name: POH Services - Update Github Pipeline Status to Azure SQL Database
 on: 
    workflow_dispatch:
 
 jobs:
 
-  Job1:
-   steps:
+ Job1:
+  steps:
     - name : Job1
       shell: pwsh          
       run: | 
              write-host "Job1 Completed"
         
-   Job2:
+  Job2:
     steps:
     - name : Job2
       shell: pwsh          
       run: | 
              write-host "Job2 Completed"   
 
-   Job3:
+  Job3:
     steps:
     - name : Job3
       shell: pwsh          

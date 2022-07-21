@@ -29,11 +29,8 @@ jobs:
       - name : Update POH Service Deployment Status on Azure SQL Database     
         shell: pwsh
         run: |
-              $ServerInstance = "myentdb.database.windows.net"
-              $Database = "mydatabase"
-              Write-Host "---------------------------------------------------------------------------------------"
-              $cmd = "UPDATE Persons SET FirstName = 'Maulik' WHERE PersonId = '1004'" 
-              Invoke-Sqlcmd -ServerInstance $ServerInstance -Database $Database -Query $cmd 
+              Write-Host "Job1 Completed"
+
               
 
   Job2:
@@ -46,6 +43,8 @@ jobs:
       - name : Update POH Service Deployment Status on Azure SQL Database     
         shell: pwsh
         run: |
+              [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+              Install-Module -Name SqlServer -Scope AllUsers -AllowClobber -Force -ErrorAction Stop -Confirm:$false  
               $ServerInstance = "myentdb.database.windows.net"
               $Database = "mydatabase"
               Write-Host "---------------------------------------------------------------------------------------"

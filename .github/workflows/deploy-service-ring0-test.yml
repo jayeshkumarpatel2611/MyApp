@@ -18,9 +18,28 @@ jobs:
         shell: powershell
         run: |
              .\Scripts\createGithubWorflow.ps1 -Token '${{ secrets.MYAPPTOKEN }}' -RingInfo '${{ inputs.RingInfo }}'
-             
-  updateAzureSQLDatabase:
+
+
+  Job1:
     runs-on: ubuntu-latest
+    needs: createGithubWorkFlow
+    steps:
+      - name: checkout action files
+        uses: actions/checkout@v2 
+      - name : Update POH Service Deployment Status on Azure SQL Database     
+        shell: pwsh
+        run: |
+              $ServerInstance = "myentdb.database.windows.net"
+              $Database = "mydatabase"
+              Write-Host "---------------------------------------------------------------------------------------"
+              $cmd = "UPDATE Persons SET FirstName = 'Maulik' WHERE PersonId = '1004'" 
+              Invoke-Sqlcmd -ServerInstance $ServerInstance -Database $Database -Query $cmd 
+              
+
+  Job2:
+    runs-on: ubuntu-latest
+    needs: [createGithubWorkFlow, Job1] 
+    if: ${{ always() && needs.createGithubWorkFlow.result == 'success' || needs.Job1.result == 'success' }}
     steps:
       - name: checkout action files
         uses: actions/checkout@v2 

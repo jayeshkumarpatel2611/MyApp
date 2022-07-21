@@ -18,4 +18,18 @@ jobs:
         shell: powershell
         run: |
              .\Scripts\createGithubWorflow.ps1 -Token '${{ secrets.MYAPPTOKEN }}' -RingInfo '${{ inputs.RingInfo }}'
+             
+  updateAzureSQLDatabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout action files
+        uses: actions/checkout@v2 
+      - name : Update POH Service Deployment Status on Azure SQL Database     
+        shell: pwsh
+        run: |
+              $ServerInstance = "myentdb.database.windows.net"
+              $Database = "mydatabase"
+              Write-Host "---------------------------------------------------------------------------------------"
+              $cmd = "UPDATE Persons SET FirstName = 'Maulik' WHERE PersonId = '1004'" 
+              Invoke-Sqlcmd -ServerInstance $ServerInstance -Database $Database -Query $cmd 
   

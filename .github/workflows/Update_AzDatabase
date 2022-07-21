@@ -1,4 +1,4 @@
-name: Deploy Service
+name: Update Azure SQL Database
 on: 
    workflow_dispatch:
 

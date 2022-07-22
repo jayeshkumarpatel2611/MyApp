@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: checkout action files
         uses: actions/checkout@v2 
-      - name : Update POH Service Deployment Status on Azure SQL Database     
+      - name : Job1     
         shell: pwsh
         run: |
               Write-Host "Job1 Completed"
@@ -38,20 +38,16 @@ jobs:
     needs: [createGithubWorkFlow, Job1] 
     if: ${{ always() }}
     steps:
+    
       - name: checkout action files
         uses: actions/checkout@v2 
-      - name: Azure Login
-        uses: Azure/login@v1.4.3
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-          enable-AzPSSession: true
         
       - name : Update POH Service Deployment Status on Azure SQL Database 
         shell: pwsh
         run: |
               [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
               Install-Module -Name SqlServer -Scope CurrentUser -AllowClobber -Force -ErrorAction Stop -Confirm:$false 
-              $Date = Get-Date 
+              $Date = Get-Date -Format "MM/dd/yyyy hh:mm tt"
               $DeploymentStatus = "${{ needs.Job1.result }}"
               $DeploymentURL = "https://github.com/jayeshkumarpatel2611/MyApp/actions/runs/${{ github.run_id }}"
               Write-Host "Date: " $Date
@@ -59,7 +55,7 @@ jobs:
               Write-Host "URL: " $DeploymentURL
            
               Write-Host "---------------------------------------------------------------------------------------"
-              $sqlQuery = "UPDATE [dbo].[POH] SET ServiceDeploymentDate = '$Date', ServiceDeploymentStatus = '$DeploymentStatus', ServiceDeploymentURL = '$DeploymentURL' WHERE TenantID = '8b9b2def-34a2-4e71-93cc-cf6bc40db219'"
+              $sqlQuery = "UPDATE [dbo].[POH] SET ServiceDeploymentDate = '$Date', ServiceDeploymentStatus = '$DeploymentStatus', ServiceDeploymentURL = '$DeploymentURL' WHERE TenantID = '72eb4a65-023a-419c-8a36-64b05564b71f'"
               Invoke-sqlCmd -ConnectionString "${{ secrets.SQL_Connection_String }}" -query "$($sqlQuery)"
               
   

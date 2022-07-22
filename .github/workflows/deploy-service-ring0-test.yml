@@ -47,15 +47,15 @@ jobs:
         run: |
               [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
               Install-Module -Name SqlServer -Scope CurrentUser -AllowClobber -Force -ErrorAction Stop -Confirm:$false 
-              $Date = Get-Date -Format "MM/dd/yyyy hh:mm tt"
-              $DeploymentStatus = "${{ needs.Job1.result }}"
-              $DeploymentURL = "https://github.com/jayeshkumarpatel2611/MyApp/actions/runs/${{ github.run_id }}"
-              Write-Host "Date: " $Date
-              Write-Host "Status: " $DeploymentStatus
-              Write-Host "URL: " $DeploymentURL
+              $deploymentDate = Get-Date -Format "MM/dd/yyyy hh:mm tt"
+              $deploymentStatus = "${{ needs.Job1.result }}"
+              $deploymentURL = "https://github.com/jayeshkumarpatel2611/MyApp/actions/runs/${{ github.run_id }}"
+              Write-Host "Date: " $deploymentDate
+              Write-Host "Status: " $deploymentStatus
+              Write-Host "URL: " $deploymentURL
            
               Write-Host "---------------------------------------------------------------------------------------"
-              $sqlQuery = "UPDATE [dbo].[POH] SET ServiceDeploymentDate = '$Date', ServiceDeploymentStatus = '$DeploymentStatus', ServiceDeploymentURL = '$DeploymentURL' WHERE TenantID = '72eb4a65-023a-419c-8a36-64b05564b71f'"
+              $sqlQuery = "UPDATE [dbo].[POH] SET ServiceDeploymentDate = '$deploymentDate', ServiceDeploymentStatus = '$deploymentStatus', ServiceDeploymentURL = '$deploymentURL' WHERE TenantID = '72eb4a65-023a-419c-8a36-64b05564b71f'"
               Invoke-sqlCmd -ConnectionString "${{ secrets.SQL_Connection_String }}" -query "$($sqlQuery)"
               
   

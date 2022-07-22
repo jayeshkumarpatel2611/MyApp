@@ -51,7 +51,7 @@ jobs:
         run: |
               [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
               Install-Module -Name SqlServer -Scope CurrentUser -AllowClobber -Force -ErrorAction Stop -Confirm:$false  
-              $ServerInstance = "myentdb.database.windows.net"
+              $ServerInstance = "myentdb"
               $Database = "mydatabase"
               Write-Host "---------------------------------------------------------------------------------------"
               $cmd = "UPDATE [mydatabase].[dbo].[Persons] SET FirstName = 'Vaibhav' WHERE PersonId = '1004'" 

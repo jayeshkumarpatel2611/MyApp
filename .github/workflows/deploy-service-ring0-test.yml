@@ -57,10 +57,9 @@ jobs:
               Write-Host "Date: " $Date
               Write-Host "Status: " $DeploymentStatus
               Write-Host "URL: " $DeploymentURL
-              
-              Write-Host "URL: https://github.com/jayeshkumarpatel2611/MyApp/actions/runs/${{ github.run_id }}"
+           
               Write-Host "---------------------------------------------------------------------------------------"
-              $sqlQuery = "UPDATE POH SET ServiceDeploymentDate = '$Date', ServiceDeploymentStatus = '$DeploymentStatus', ServiceDeploymentURL = '$DeploymentURL' WHERE TenantID = '8b9b2def-34a2-4e71-93cc-cf6bc40db219'"
-              Invoke-sqlCmd -ConnectionString '${{ secrets.SQL_Connection_String }}' -query '$sqlQuery'
+              $sqlQuery = "UPDATE [dbo].[POH] SET ServiceDeploymentDate = '$Date', ServiceDeploymentStatus = '$DeploymentStatus', ServiceDeploymentURL = '$DeploymentURL' WHERE TenantID = '8b9b2def-34a2-4e71-93cc-cf6bc40db219'"
+              Invoke-sqlCmd -ConnectionString "${{ secrets.SQL_Connection_String }}" -query "$($sqlQuery)"
               
   

@@ -54,6 +54,6 @@ jobs:
               $ServerInstance = "myentdb.database.windows.net"
               $Database = "mydatabase"
               Write-Host "---------------------------------------------------------------------------------------"
-              $cmd = "UPDATE Persons SET FirstName = 'Maulik' WHERE PersonId = '1004'" 
+              $cmd = "UPDATE [mydatabase].[dbo].[Persons] SET FirstName = 'Vaibhav' WHERE PersonId = '1004'" 
               Invoke-Sqlcmd -ServerInstance $ServerInstance -Database $Database -Query $cmd 
   

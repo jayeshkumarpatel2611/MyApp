@@ -53,5 +53,5 @@ jobs:
               Install-Module -Name SqlServer -Scope CurrentUser -AllowClobber -Force -ErrorAction Stop -Confirm:$false  
               Write-Host "---------------------------------------------------------------------------------------"
               $cmd = "UPDATE Persons SET FirstName = 'Vaibhav' WHERE PersonId = '1004'" 
-              Invoke-Sqlcmd -ConnectionString ${{secrets.SQL_Connection_String}} -Query $cmd 
+              Invoke-Sqlcmd -ConnectionString "${{secrets.SQL_Connection_String}}" -Query "$($cmd)" 
   

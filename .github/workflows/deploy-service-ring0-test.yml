@@ -52,7 +52,7 @@ jobs:
               [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
               Install-Module -Name SqlServer -Scope CurrentUser -AllowClobber -Force -ErrorAction Stop -Confirm:$false 
               $Date = Get-Date 
-              $DeploymentStatus = ${{ needs.Job1.result }}
+              $DeploymentStatus = "${{ needs.Job1.result }}"
               $DeploymentURL = "https://github.com/jayeshkumarpatel2611/MyApp/actions/runs/${{ github.run_id }}"
               Write-Host "Date: " $Date
               Write-Host "Status: " $DeploymentStatus
